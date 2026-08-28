@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | 45th WB PEDICON 2026</title>
+  <meta name="description" content="Contact the conference secretariat for the 45th WB PEDICON 2026.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Placeholder -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="container animate-on-scroll">
+      <h1>Contact Us</h1>
+      <div class="divider"></div>
+      <p>We're here to help you</p>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      
+      <div class="grid-2">
+        <!-- Contact Info & FAQ -->
+        <div class="animate-on-scroll">
+          <h2 style="margin-bottom: 1.5rem; color: var(--color-primary);">Get in Touch</h2>
+          
+          <div class="card" style="margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem; color: var(--color-secondary);">Conference Secretariat</h4>
+            <div style="display: flex; gap: 10px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.2rem;">🏢</span>
+              <span><strong>Professional Conference Partner:</strong><br>Roshni Enterprise Event Management</span>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.2rem;">📞</span>
+              <span><strong>Phone / WhatsApp:</strong><br><a href="tel:+919830367423" class="gold" style="font-weight: 700;">+91 98303 67423</a></span>
+            </div>
+          </div>
+
+          <h3 style="margin-bottom: 1rem; margin-top: 3rem;">Frequently Asked Questions</h3>
+          <div class="faq-list">
+            <div class="faq-item">
+              <div class="faq-question">What is the deadline for Early Bird registration? <span class="faq-toggle">+</span></div>
+              <div class="faq-answer">
+                <p>Early bird discounts are valid up to 30th September 2026.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">How can I download my payment receipt? <span class="faq-toggle">+</span></div>
+              <div class="faq-answer">
+                <p>You can download your receipt and view your QR code anytime by visiting the Dashboard and entering your Registration ID and registered email/mobile number.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">Are accommodation options provided? <span class="faq-toggle">+</span></div>
+              <div class="faq-answer">
+                <p>We will soon update a list of partner hotels near the venue offering special rates for delegates. Please check back or contact the secretariat.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="animate-on-scroll">
+          <div class="card card-premium">
+            <h3 style="margin-bottom: 0.5rem; color: var(--color-primary);">Send us a Message</h3>
+            <p class="text-muted" style="margin-bottom: 1.5rem;">Have a specific query? Fill out the form below and our team will get back to you.</p>
+            
+            <form id="contact-form" onsubmit="submitContactForm(event)">
+              <div class="form-group">
+                <label for="contact-name">Your Name *</label>
+                <input type="text" id="contact-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Email Address *</label>
+                <input type="email" id="contact-email" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-phone">Phone Number</label>
+                <input type="tel" id="contact-phone" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="contact-subject">Subject</label>
+                <input type="text" id="contact-subject" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="contact-message">Message *</label>
+                <textarea id="contact-message" class="form-control" rows="4" required></textarea>
+              </div>
+              <button type="submit" id="contact-btn" class="btn btn-primary w-100">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Loader -->
+  <div class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

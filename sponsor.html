@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sponsors &amp; Partners | EZECON 2026</title>
+  <meta name="description"
+    content="Sponsorship opportunities and trade brochure details at EZECON 2026 — 5th East Zone Emergency Medicine Conference, Kolkata.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Custom self-contained styles for premium sponsor page elements */
+    .btn-download-container {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .outcome-card {
+      background: var(--color-white);
+      padding: 1.8rem;
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--color-accent);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .outcome-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .outcome-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.8rem;
+      color: var(--color-primary);
+    }
+
+    .outcome-card p {
+      font-size: 0.95rem;
+      margin-bottom: 0;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+    .fast-facts {
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      margin: 3rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fast-facts::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 90% 10%, rgba(230, 57, 70, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .fast-facts h3 {
+      color: #fff;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.8rem;
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .fact-item strong {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--color-accent-light);
+      margin-bottom: 0.2rem;
+    }
+
+    .fact-item span {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .tier-price {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--color-accent);
+      margin: 0.8rem 0 1.5rem 0;
+    }
+
+    .tier-features {
+      text-align: left;
+      line-height: 1.8;
+      list-style: none;
+      padding: 0;
+      margin-bottom: 1.5rem;
+      font-size: 0.92rem;
+    }
+
+    .tier-features li {
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .tier-features li::before {
+      content: '✓';
+      color: var(--color-success);
+      font-weight: bold;
+    }
+
+    .tier-features li.cross::before {
+      content: '✕';
+      color: var(--color-error);
+    }
+
+    .addon-section {
+      background: var(--color-light-bg);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      margin: 4rem 0;
+    }
+
+    .addon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .addon-card {
+      background: var(--color-white);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: var(--color-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .addon-icon {
+      font-size: 1.5rem;
+      background: rgba(230, 57, 70, 0.08);
+      color: var(--color-accent);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .bank-card {
+      background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary-dark) 100%);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      margin: 4rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .bank-card h3 {
+      color: #fff;
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .bank-card p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+    }
+
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.8rem;
+      margin-top: 2rem;
+    }
+
+    .bank-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.2rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .bank-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    .bank-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .bank-value.no-mono {
+      font-family: var(--font-body);
+    }
+
+    .gst-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(244, 162, 97, 0.1);
+      border-left: 3px solid var(--color-gold);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="marquee-placeholder"></div>
+  <div id="nav-placeholder"></div>
+
+  <section class="page-header">
+    <div class="container animate-on-scroll">
+      <h1>Sponsors &amp; Partners</h1>
+      <div class="divider"></div>
+      <p>Partner with EZECON 2026 &bull; Build Emergency Medicine Together</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Overview Section -->
+      <div class="grid-2 animate-on-scroll" style="align-items: center; margin-bottom: 4rem;">
+        <div>
+          <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Empower Emergency Care, Expand Your Brand</h2>
+          <p><strong>EZECON 2026</strong> is Eastern India's flagship emergency medicine conference, providing a
+            concentrated, credible platform for meaningful engagement with the region's emergency and critical care
+            community.</p>
+          <p>Organized by the <strong>Society for Emergency Medicine India (SEMI) West Bengal Chapter</strong>, this
+            academic highlight event delivers massive physical and digital touchpoints including exhibition space,
+            screen displays, lanyards, and digital outreach.</p>
+
+          <div class="btn-download-container" style="text-align: left; margin-top: 1.5rem;">
+            <a href="/images/tradebrochure.pdf" download class="btn btn-primary btn-lg"
+              style="display: inline-flex; align-items: center; gap: 8px;">
+              📥 Download Trade Brochure (PDF)
+            </a>
+          </div>
+        </div>
+
+        <div
+          style="background: var(--color-light-bg); padding: 2.5rem; border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
+          <h3 style="font-size: 1.3rem; margin-bottom: 1.2rem; color: var(--color-primary);">Legacy &amp; Momentum</h3>
+          <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;"><strong>EZECON 2025</strong> recorded
+            more than <strong>450 delegate registrations</strong>, featuring expert clinical faculty from across India
+            and the United Kingdom. This strong momentum guarantees solid regional branding value for our 2026 industry
+            partners.</p>
+          <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 1rem 0;">
+          <div style="font-size: 0.9rem; color: var(--color-text-muted);">
+            <div><strong>Expected Attendees:</strong> 300+ Medical Professionals</div>
+            <div><strong>Target Profile:</strong> Emergency &amp; Critical Care Physicians, Consultants, Residents,
+              Medical Officers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Outcomes -->
+      <div class="section-header animate-on-scroll">
+        <h2>Key Sponsor Outcomes</h2>
+        <div class="divider"></div>
+        <p>Strategic benefits of associating with Eastern India's flagship EM event</p>
+      </div>
+
+      <div class="outcomes-grid animate-on-scroll">
+        <div class="outcome-card">
+          <h3>🎯 1. Concentrated Audience</h3>
+          <p>Gain direct and high-value visibility in front of active acute care decision-makers who influence
+            purchasing and training priorities.</p>
+        </div>
+        <div class="outcome-card">
+          <h3>🎓 2. Academic Association</h3>
+          <p>Partner closely with SEMI, the oldest and largest national organization representing trained Emergency
+            Physicians in India.</p>
+        </div>
+        <div class="outcome-card">
+          <h3>🤝 3. Direct Brand Engagement</h3>
+          <p>Leverage premium physical exhibition spaces, signage banners, kit inclusions, and constant digital
+            promotions.</p>
+        </div>
+        <div class="outcome-card">
+          <h3>🚑 4. Support Education</h3>
+          <p>Underscore your corporate responsibility by actively funding skills-based medical education and critical
+            emergency care upgrades.</p>
+        </div>
+      </div>
+
+      <!-- Fast Facts -->
+      <div class="fast-facts animate-on-scroll">
+        <h3>EZECON 2026 at a Glance</h3>
+        <div class="facts-grid">
+          <div class="fact-item">
+            <strong>8-9 August 2026</strong>
+            <span>Conference Dates</span>
+          </div>
+          <div class="fact-item">
+            <strong>AltAir Boutique Hotel</strong>
+            <span>Venue (Kolkata)</span>
+          </div>
+          <div class="fact-item">
+            <strong>300+ Expected</strong>
+            <span>Delegates &amp; Faculty</span>
+          </div>
+          <div class="fact-item">
+            <strong>WBMC Credits</strong>
+            <span>Accredited Academic Hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sponsorship Tiers -->
+      <div class="section-header animate-on-scroll" style="margin-top: 5rem;">
+        <h2>Sponsorship Packages</h2>
+        <div class="divider"></div>
+        <p>Select a tier that matches your visibility and engagement strategy</p>
+      </div>
+
+      <div class="grid-2 animate-on-scroll" style="max-width: 1000px; margin: 0 auto; gap: 2rem;">
+
+        <!-- Platinum -->
+        <div class="card card-premium"
+          style="border-top: 5px solid #ffd700; padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="color: #c5a000; text-align: center;">🏆 Platinum Sponsor</h3>
+            <div class="tier-price" style="text-align: center;">₹5,00,000</div>
+            <ul class="tier-features">
+              <li><strong>Exhibition:</strong> Premium Exhibition Stall included</li>
+              <li><strong>Backdrop:</strong> Prominent branding on Main Backdrop</li>
+              <li><strong>Collaterals:</strong> Prominent Logo presence</li>
+              <li><strong>Screen Ads:</strong> Full Visibility during session breaks</li>
+              <li><strong>Delegate Kits:</strong> Custom promotional inserts</li>
+              <li><strong>Standees:</strong> Premium standees placement approved</li>
+              <li><strong>Passes:</strong> 20 Complimentary registrations</li>
+              <li><strong>Catering:</strong> 5 Lunch coupons per day</li>
+              <li><strong>Digital:</strong> High Priority website recognition</li>
+            </ul>
+          </div>
+          <a href="contact.html" class="btn btn-primary w-100" style="margin-top: 1rem;">Enquire Now</a>
+        </div>
+
+        <!-- Gold -->
+        <div class="card card-premium"
+          style="border-top: 5px solid #c0c0c0; padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="color: #7f8c8d; text-align: center;">🥇 Gold Sponsor</h3>
+            <div class="tier-price" style="text-align: center;">₹3,00,000</div>
+            <ul class="tier-features">
+              <li><strong>Exhibition:</strong> Standard Stall (or +1L premium upgrade)</li>
+              <li><strong>Backdrop:</strong> Selected venue layout branding</li>
+              <li><strong>Collaterals:</strong> Full logo presence</li>
+              <li><strong>Screen Ads:</strong> Selected slot visibility</li>
+              <li><strong>Delegate Kits:</strong> Standard inserts</li>
+              <li><strong>Standees:</strong> Approved standees placement</li>
+              <li><strong>Passes:</strong> 15 Complimentary registrations</li>
+              <li><strong>Catering:</strong> 3 Lunch coupons per day</li>
+              <li><strong>Digital:</strong> Full website logo presence</li>
+            </ul>
+          </div>
+          <a href="contact.html" class="btn btn-primary w-100" style="margin-top: 1rem;">Enquire Now</a>
+        </div>
+
+        <!-- Silver -->
+        <div class="card card-premium"
+          style="border-top: 5px solid #cd7f32; padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="color: #b56c25; text-align: center;">🥈 Silver Sponsor</h3>
+            <div class="tier-price" style="text-align: center;">₹2,00,000</div>
+            <ul class="tier-features">
+              <li><strong>Exhibition:</strong> Standard Exhibition space</li>
+              <li><strong>Backdrop:</strong> Selected venue branding</li>
+              <li><strong>Collaterals:</strong> Selected logo presence</li>
+              <li><strong>Screen Ads:</strong> Break slideshow slots</li>
+              <li><strong>Delegate Kits:</strong> Standard inserts</li>
+              <li><strong>Standees:</strong> Approved standees placement</li>
+              <li><strong>Passes:</strong> 10 Complimentary registrations</li>
+              <li><strong>Catering:</strong> 2 Lunch coupons per day</li>
+              <li><strong>Digital:</strong> Logo on sponsor web section</li>
+            </ul>
+          </div>
+          <a href="contact.html" class="btn btn-primary w-100" style="margin-top: 1rem;">Enquire Now</a>
+        </div>
+
+        <!-- Scientific Session -->
+        <div class="card card-premium"
+          style="border-top: 5px solid var(--color-teal); padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="color: var(--color-teal); text-align: center;">🔬 Scientific Session</h3>
+            <div class="tier-price" style="text-align: center;">₹1,00,000</div>
+            <ul class="tier-features">
+              <li class="cross"><strong>Exhibition:</strong> Stall space not included</li>
+              <li><strong>Backdrop:</strong> Branding in sponsored session room</li>
+              <li><strong>Collaterals:</strong> Session-specific logo linkage</li>
+              <li><strong>Screen Ads:</strong> Dedicated session screen display</li>
+              <li><strong>Delegate Kits:</strong> Standard inserts</li>
+              <li><strong>Standees:</strong> Maximum 2 banner standees</li>
+              <li><strong>Passes:</strong> 5 Complimentary registrations</li>
+              <li><strong>Catering:</strong> 2 Lunch coupons per day</li>
+              <li><strong>Digital:</strong> Highlighted web session page logo</li>
+            </ul>
+          </div>
+          <a href="contact.html" class="btn btn-primary w-100" style="margin-top: 1rem;">Enquire Now</a>
+        </div>
+
+        <!-- Bronze -->
+        <div class="card card-premium"
+          style="border-top: 5px solid var(--color-accent); padding: 2.5rem; display: flex; flex-direction: column; justify-content: space-between; grid-column: span 1;">
+          <div>
+            <h3 style="color: var(--color-accent); text-align: center;">📦 Bronze / Stall</h3>
+            <div class="tier-price" style="text-align: center;">₹50,000</div>
+            <ul class="tier-features">
+              <li><strong>Exhibition:</strong> Compact exhibition stall space</li>
+              <li><strong>Backdrop:</strong> General sponsor listing</li>
+              <li><strong>Collaterals:</strong> Basic small logo format</li>
+              <li class="cross"><strong>Screen Ads:</strong> Not included</li>
+              <li><strong>Delegate Kits:</strong> Basic brochure insert</li>
+              <li><strong>Standees:</strong> Subject to venue space limits</li>
+              <li><strong>Passes:</strong> 1 Complimentary registration</li>
+              <li><strong>Catering:</strong> 1 Lunch coupon per day</li>
+              <li><strong>Digital:</strong> Text recognition on website</li>
+            </ul>
+          </div>
+          <a href="contact.html" class="btn btn-primary w-100" style="margin-top: 1rem;">Enquire Now</a>
+        </div>
+
+      </div>
+
+      <!-- Add-on Opportunities -->
+      <div class="addon-section animate-on-scroll">
+        <h3 style="font-size: 1.5rem; text-align: center; color: var(--color-primary); margin-bottom: 0.5rem;">Custom
+          Add-On Opportunities</h3>
+        <p
+          style="text-align: center; color: var(--color-text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto 2rem;">
+          Maximize your conference visibility with highly targeted direct exposure packages.</p>
+
+        <div class="addon-grid">
+          <div class="addon-card">
+            <div class="addon-icon">🛠️</div> Pre-Conference Workshop Sponsorship
+          </div>
+          <div class="addon-card">
+            <div class="addon-icon">👜</div> Delegate Bag / Kit Branding
+          </div>
+          <div class="addon-card">
+            <div class="addon-icon">📿</div> Lanyard Branding (Highly Visible)
+          </div>
+          <div class="addon-card">
+            <div class="addon-icon">🖥️</div> Registration Desk Counter Branding
+          </div>
+          <div class="addon-card">
+            <div class="addon-icon">📖</div> Scientific Abstract Booklet Ads
+          </div>
+          <div class="addon-card">
+            <div class="addon-icon">✍️</div> Notepad &amp; Pen Branding
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Details Card -->
+      <div class="bank-card animate-on-scroll">
+        <h3>🏦 Bank Payment Details</h3>
+        <p>Please use the following official accounts to process your sponsorship commitment payments. All transfers
+          should mention "EZECON 2026 Sponsorship".</p>
+
+        <div class="bank-grid">
+          <div class="bank-item">
+            <div class="bank-label">Account Name</div>
+            <div class="bank-value no-mono">Society for Emergency Medicine - India - WB (Kolkata)</div>
+          </div>
+          <div class="bank-item">
+            <div class="bank-label">Bank Name</div>
+            <div class="bank-value no-mono">AXIS BANK</div>
+          </div>
+          <div class="bank-item">
+            <div class="bank-label">Account Number</div>
+            <div class="bank-value">920010007139569</div>
+          </div>
+          <div class="bank-item">
+            <div class="bank-label">Account Type</div>
+            <div class="bank-value no-mono">Savings Account</div>
+          </div>
+          <div class="bank-item">
+            <div class="bank-label">IFSC Code</div>
+            <div class="bank-value">UTIB0000030</div>
+          </div>
+          <div class="bank-item">
+            <div class="bank-label">PAN Number</div>
+            <div class="bank-value">AAXAS6829D</div>
+          </div>
+          <div class="bank-item" style="grid-column: span 1;">
+            <div class="bank-label">Branch</div>
+            <div class="bank-value no-mono">Jubilee Hills, Hyderabad</div>
+          </div>
+          <div class="bank-item" style="grid-column: span 1;">
+            <div class="bank-label">Submit UTR / Transaction to</div>
+            <div class="bank-value no-mono" style="font-size: 0.95rem;"><a href="mailto:semiwbchapter@gmail.com"
+                style="color: var(--color-accent-light); text-decoration: underline;">semiwbchapter@gmail.com</a></div>
+          </div>
+        </div>
+
+        <div class="gst-note">
+          <strong>⚠️ GST Policy Exemption:</strong> SEMI West Bengal Chapter is a registered professional society and is
+          exempt from GST, operating without a GST registration certificate. An official receipt will be issued by the
+          organizing society upon confirmation of your sponsorship support.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA section linking to contactus -->
+  <section class="section section-dark" style="text-align: center;">
+    <div class="container animate-on-scroll">
+      <h2>Reserve Your Partnership Today</h2>
+      <p style="max-width: 600px; margin: 1rem auto 2rem; color: rgba(255,255,255,0.85);">For custom sponsorship
+        bundles, stall layout queries, and final reservations, contact our organizing desk immediately.</p>
+
+      <div
+        style="line-height: 2.2; margin-bottom: 2.5rem; text-align: left; max-width: 450px; margin: 0 auto 2.5rem auto; font-size: 0.95rem;">
+        <div
+          style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+          <span>👨‍⚕️ <strong>Dr Kumar Raj</strong><br><small style="color: rgba(255,255,255,0.6);">Organizing
+              Chairperson</small></span>
+          <span style="text-align: right;"><a href="tel:+919831773883" style="color: var(--color-accent-light);">98317
+              73883</a><br><a href="tel:+918777841917" style="color: var(--color-accent-light);">87778 41917</a></span>
+        </div>
+        <div
+          style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0;">
+          <span>👨‍⚕️ <strong>Dr Nishant Agarwal</strong><br><small style="color: rgba(255,255,255,0.6);">Organizing
+              Secretary</small></span>
+          <span style="text-align: right; align-self: center;"><a href="tel:+919836782161"
+              style="color: var(--color-accent-light);">98367 82161</a></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding-top: 8px;">
+          <span>👨‍⚕️ <strong>Dr Bodhisatwa Choudhuri</strong><br><small
+              style="color: rgba(255,255,255,0.6);">Co-Organizing Chairperson</small></span>
+          <span style="text-align: right; align-self: center;"><a href="tel:+919830636315"
+              style="color: var(--color-accent-light);">98306 36315</a></span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+        <a href="contact.html" class="btn btn-primary btn-lg">📞 Contact Us Page</a>
+        <a href="brochure.pdf" download class="btn btn-secondary btn-lg">📥 Download Trade Brochure</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <button class="back-to-top" aria-label="Back to top">↑</button>
+  <script src="script.js"></script>
+</body>
+
+</html>

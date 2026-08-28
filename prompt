@@ -1,0 +1,304 @@
+
+You are an expert full-stack web developer and UI/UX designer.
+
+Create a complete, production-ready medical society website for IAP Howrah. The website should be inspired by the structure, smooth UX, and registration workflow of my previous projects located at:
+
+- D:\Personal\Dadas\Appollo\Apollo
+- D:\Personal\Dadas\spickpiku
+
+Also i have already provided few files that needs modifications:
+
+- about.html
+- committee.html
+- contact.html
+- footer.html
+- index.html
+- nav.html
+- program.html
+- register.html
+- speakers.html
+- sponsor.html
+- venue.html
+- style.css
+- script.js
+
+The official website content, branding references, scientific details, schedules, and other conference information must be extracted and adapted from 
+
+brochure.jpeg
+
+====================================================
+CORE REQUIREMENTS
+====================================================
+
+The final website should feel:
+
+- Royal
+- Premium
+- Professional
+- Modern
+- Medical-society grade
+- Elegant with subtle animations
+
+Avoid generic templates.
+
+The UI should feel like a top-tier international medical society.
+
+====================================================
+TECH STACK
+====================================================
+
+Use:
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Optional lightweight libraries only if necessary
+- No React/Vue/Angular
+- Fully GitHub Pages compatible
+- No backend server
+- Database/storage via Google Sheets
+- Google Apps Script as API layer for form submissions
+
+====================================================
+DESIGN GUIDELINES
+====================================================
+
+Visual style:
+
+- olive green / turquise / white / gold accents
+- Glassmorphism + soft shadows
+- Elegant typography
+- Smooth scroll animations
+- Premium hero sections
+- High-end medical conference branding
+- Responsive design for mobile/tablet/desktop
+- Minimal but sophisticated animation
+
+Add:
+
+- Animated counters
+- Reveal-on-scroll effects
+- Sticky navbar
+- Floating CTA buttons
+- Smooth transitions
+- Professional card layouts
+- Timeline/schedule UI
+- Speaker profile cards
+- Sponsor logo sections
+- FAQ accordion
+- Testimonial section if suitable
+
+====================================================
+PAGES REQUIRED
+====================================================
+
+1. Home Page
+- Hero section
+- Conference tagline
+- Date & venue
+- Register CTA
+- Important highlights
+- About conference preview
+- Speakers preview
+- Countdown timer
+- Sponsors
+- Contact preview
+
+2. About Page
+- About conference
+- Theme
+- Mission
+- Objectives
+- Welcome message
+- Organizing institution
+
+3. Committee Page
+- Organizing committee
+- Scientific committee
+- Advisory board
+- Proper cards with designation and photos
+
+4. Program Page
+- Scientific schedule
+- Conference agenda
+- Workshop details
+- Tabbed day-wise schedule UI
+
+5. Speakers Page
+- Featured speakers
+- Speaker bios
+- Profile cards
+- Modal popup details
+
+6. Registration Page
+IMPORTANT:
+Registration flow should closely resemble the Apollo project.
+
+Features:
+- Delegate registration
+- Category selection
+- Dynamic pricing
+- Early bird pricing support
+- Payment screenshot upload
+- Auto-generated registration ID
+- Form validation
+- Success popup
+- Dashboard-like confirmation
+
+Store registrations in Google Sheets using Apps Script.
+
+7. Dashboard Page
+- Registration success status
+- User info preview
+- Payment status
+- QR code generation for entry badge
+- Download confirmation slip
+
+8. Venue Page
+- Venue details
+- Google Maps embed
+- Nearby hotels
+- Travel information
+
+9. Sponsors Page
+- Sponsor tiers
+- Sponsor logos
+- Partnership CTA
+
+10. Contact Page
+- Contact form
+- Organizers info
+- Social links
+- Email integration
+11. nav.html, footer.html
+-common nav bar and footer  for all pages
+====================================================
+REGISTRATION SYSTEM
+====================================================
+
+Build a complete frontend registration system using:
+
+Frontend:
+- HTML/CSS/JS
+
+Storage:
+- Google Sheets
+
+API:
+- Google Apps Script Web App
+
+Features:
+- Save all registrations to Google Sheets
+- Upload payment screenshot to Google Drive
+- Store file link in Sheets
+- Prevent duplicate registrations using email/phone
+- Generate unique registration ID
+- Admin-friendly sheet structure
+
+Also generate:
+- Sample Apps Script backend code
+- Google Sheet column structure
+- Deployment instructions
+
+====================================================
+FILE STRUCTURE
+====================================================
+
+Generate a clean structure like:
+
+/images
+index.html
+about.html
+committee.html
+program.html
+speakers.html
+register.html
+dashboard.html
+venue.html
+sponsors.html
+contact.html
+
+====================================================
+CONTENT EXTRACTION
+====================================================
+
+Extract and intelligently organize:
+- Conference title
+- Theme
+- Dates
+- Venue
+- Speakers
+- Schedule
+- Committee names
+- Registration details
+- Sponsors
+- Contact information
+
+from:
+brochure.jpeg
+
+If some information is missing:
+- Create professional placeholder content
+- Keep placeholders easy to replace
+
+====================================================
+UX REQUIREMENTS
+====================================================
+
+The website should feel:
+- Smooth
+- Fast
+- Premium
+- Interactive
+- Trustworthy
+- Academic
+
+Avoid:
+- Cheap gradients
+- Overly flashy animations
+- Template-like appearance
+- Cluttered layouts
+
+====================================================
+OUTPUT REQUIREMENTS
+====================================================
+
+Generate:
+
+1. Full HTML pages
+2. Complete CSS
+3. JavaScript functionality
+4. Responsive layouts
+5. Google Apps Script backend
+6. Google Sheets integration guide
+7. Deployment guide for GitHub Pages
+8. SEO optimization
+9. Accessibility improvements
+10. Clean reusable components
+
+====================================================
+EXTRA FEATURES
+====================================================
+
+If possible add:
+- Animated loading screen
+- Dynamic countdown
+- Email confirmation template
+- QR badge generator
+- Printable registration receipt
+- WhatsApp contact button
+
+====================================================
+IMPORTANT
+====================================================
+
+The final result should look like a real premium international medicine society website — not a student project.
+
+Maintain a strong balance between:
+- Medical professionalism
+- Royal aesthetics
+- Modern UI/UX
+- Functional registration workflow
+
+Code should be clean, modular, and easy to maintain.
+

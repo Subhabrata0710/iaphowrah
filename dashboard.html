@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | 45th WB PEDICON 2026</title>
+  <meta name="description" content="View your registration details, QR code, and download your receipt for the 45th WB PEDICON 2026.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Placeholder -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="container animate-on-scroll">
+      <h1>Participant Dashboard</h1>
+      <div class="divider"></div>
+      <p>View your registration details and download receipt</p>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      
+      <!-- Lookup Form -->
+      <div class="dashboard-lookup-card animate-on-scroll">
+        <h2 style="margin-bottom: 0.5rem;">Find Registration</h2>
+        <p class="text-muted" style="margin-bottom: 2rem;">Enter your Registration ID (e.g. WBP26-XXXX) and your registered Email or Mobile number.</p>
+        
+        <form onsubmit="event.preventDefault(); lookupRegistration();">
+          <div class="form-group" style="text-align: left;">
+            <label for="lookup-regid">Registration ID *</label>
+            <input type="text" id="lookup-regid" class="form-control" placeholder="WBP26-..." required style="text-transform: uppercase;">
+          </div>
+          <div class="form-group" style="text-align: left; margin-bottom: 2rem;">
+            <label for="lookup-contact">Registered Email or Mobile *</label>
+            <input type="text" id="lookup-contact" class="form-control" placeholder="Email address or 10-digit mobile" required>
+          </div>
+          <button type="submit" id="lookup-btn" class="btn btn-primary btn-lg w-100">Find Registration</button>
+        </form>
+      </div>
+
+      <!-- Registration Result Display -->
+      <div id="dashboard-result" style="display: none; margin-top: 3rem;" class="animate-on-scroll">
+        <div class="success-card">
+          <div class="success-card-header no-print">
+            <h2 style="color: #fff; margin-bottom: 5px;">Registration Details</h2>
+            <div class="reg-id-display" id="d-reg-id" style="color: #fff; font-size: 1.8rem; margin-top: 10px;">WBP26-XXXX</div>
+          </div>
+          
+          <div class="success-card-body print-receipt">
+            <div class="print-receipt-header">
+              <h2 style="color: var(--color-primary); margin-bottom: 5px;">45th WB PEDICON 2026</h2>
+              <p style="margin:0; color: var(--color-text-muted);">Organized by IAP Howrah</p>
+              <h3 style="margin-top:15px;">Registration Receipt</h3>
+            </div>
+
+            <div class="grid-2">
+              <div>
+                <h4 style="margin-bottom: 1rem; color: var(--color-secondary);">Participant Info</h4>
+                <div class="reg-detail-row"><span class="reg-detail-label">Name</span><span class="reg-detail-value" id="d-name">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Category</span><span class="reg-detail-value" id="d-category">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Institution</span><span class="reg-detail-value" id="d-inst">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Designation</span><span class="reg-detail-value" id="d-desig">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Mobile</span><span class="reg-detail-value" id="d-mobile">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Email</span><span class="reg-detail-value" id="d-email">-</span></div>
+              </div>
+              <div>
+                <h4 style="margin-bottom: 1rem; color: var(--color-secondary);">Registration Info</h4>
+                <div class="reg-detail-row"><span class="reg-detail-label">Amount Paid</span><span class="reg-detail-value" id="d-amount" style="color: var(--color-success); font-size: 1.1rem;">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Payment Status</span><span class="reg-detail-value" id="d-status">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Event Dates</span><span class="reg-detail-value" id="d-date">-</span></div>
+                <div class="reg-detail-row"><span class="reg-detail-label">Venue</span><span class="reg-detail-value" id="d-venue">-</span></div>
+              </div>
+            </div>
+
+            <div class="text-center no-print" style="margin-top: 2rem;" id="qr-container">
+              <!-- QR Code injected here -->
+            </div>
+
+            <div class="text-center no-print" style="margin-top: 2rem;">
+              <button class="btn btn-teal" onclick="printRegistrationReceipt()">
+                🖨️ Print Receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Loader -->
+  <div class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

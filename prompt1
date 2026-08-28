@@ -1,0 +1,1702 @@
+MASTER PROMPT — IAP HOWRAH / 45th WB PEDICON WEBSITE
+
+You are an expert full-stack web developer, UI/UX designer, Google Apps Script developer, and medical-conference website designer.
+
+I need you to modify and upgrade my existing website project, not create an unrelated project from scratch.
+
+The website is for IAP Howrah and will contain a dedicated section for the:
+
+45th WB PEDICON 2026
+
+Date: 19–20 December 2026
+Venue: The Park Hotel, Kolkata
+Organized by: IAP Howrah / relevant organizing bodies shown in the supplied brochure
+
+I have supplied the official conference brochure image:
+
+brochure.jpeg
+
+Use the brochure as the primary source of truth for conference-specific information.
+
+1. IMPORTANT — MODIFY THE EXISTING PROJECT
+
+I already have an existing project with these files:
+
+Code.gs
+committee.html
+contact.html
+footer.html
+index.html
+nav.html
+notes
+register-ecpr.html
+script.js
+style.css
+
+
+
+DO NOT unnecessarily replace the project with a completely different architecture.
+
+Instead:
+
+inspect the existing files
+understand their current structure
+preserve useful existing functionality
+reuse existing components where appropriate
+modify/refactor them where necessary
+add missing files/pages
+improve the visual design
+improve responsiveness
+remove obsolete ECPR-specific content
+adapt the registration system for WB Pedicon
+keep the project GitHub Pages compatible
+
+If existing code is reusable, modify it rather than duplicating it.
+
+2. EXISTING PROJECT FILES
+
+The current project contains:
+
+Code.gs
+committee.html
+contact.html
+footer.html
+index.html
+nav.html
+notes
+register-ecpr.html
+script.js
+style.css
+
+
+Create/add the following where required:
+
+index.html
+about.html
+committee.html
+conference.html
+program.html
+speakers.html
+register.html
+dashboard.html
+venue.html
+gallery.html
+sponsors.html
+contact.html
+
+nav.html
+footer.html
+
+style.css
+script.js
+Code.gs
+
+/images/
+
+
+If some pages already exist, modify them instead of creating duplicates.
+
+3. OVERALL WEBSITE PURPOSE
+
+The website should represent:
+
+A. IAP Howrah medical society
+
+and
+
+B. The 45th WB PEDICON 2026 conference
+
+These should feel like two connected parts of the same professional website, rather than two unrelated websites.
+
+The main website should communicate:
+
+credibility
+academic excellence
+medical professionalism
+history
+community
+pediatric medicine
+conference information
+registration
+venue
+committee
+scientific program
+speakers
+gallery
+4. DESIGN DIRECTION
+
+The website should look like a premium medical society / national medical conference website.
+
+Do NOT make it look like:
+
+a college project
+a generic Bootstrap template
+an ordinary corporate website
+a cheap event landing page
+
+The design should feel:
+
+Premium
+Elegant
+Academic
+Medical
+Trustworthy
+Modern
+Sophisticated
+Indian medical-conference appropriate
+5. VISUAL IDENTITY
+
+Use a refined palette inspired by the supplied conference artwork.
+
+Primary colors:
+
+Deep navy blue
+Medical teal / turquoise
+White / ivory
+Muted green
+Burgundy / red accents
+Subtle gold accents
+
+Do not overuse gradients.
+
+Prefer:
+
+clean white backgrounds
+deep navy sections
+teal highlights
+subtle gold borders
+premium cards
+soft shadows
+elegant typography
+
+Use the conference brochure's visual language as inspiration.
+
+6. RESPONSIVE DESIGN
+
+The website MUST work properly on:
+
+mobile phones
+tablets
+laptops
+large desktop screens
+
+Mobile-first considerations:
+
+hamburger menu
+touch-friendly buttons
+responsive tables
+stacked cards
+mobile-friendly registration form
+responsive gallery
+responsive schedule
+responsive committee cards
+responsive Google Maps
+responsive QR code
+
+Do not simply shrink the desktop design.
+
+7. GLOBAL NAVIGATION
+
+Create a reusable navigation component using:
+
+nav.html
+
+
+Navigation should include:
+
+Home
+About Us
+Committee
+45th WB PEDICON
+Program
+Speakers
+Gallery
+Registration
+Venue
+Contact
+
+
+Use a prominent CTA:
+
+Register Now
+
+The navbar should:
+
+be sticky
+have subtle shadow
+change appearance on scroll
+work correctly on mobile
+have an accessible hamburger menu
+highlight the current page
+8. GLOBAL FOOTER
+
+Use:
+
+footer.html
+
+
+Footer should contain:
+
+IAP Howrah
+short description
+useful links
+conference links
+contact information
+social links
+registration CTA
+
+Also include:
+
+45th WB PEDICON 2026
+
+19–20 December 2026
+
+The Park Hotel, Kolkata
+
+Include a professional copyright section.
+
+9. HOME PAGE — index.html
+
+Create a premium home page for IAP Howrah.
+
+Hero Section
+
+The hero should immediately communicate:
+
+IAP HOWRAH
+
+and prominently feature:
+
+45th WB PEDICON 2026
+
+Display:
+
+19–20 December 2026
+
+The Park Hotel, Kolkata
+
+Primary CTA:
+
+Register Now
+
+Secondary CTA:
+
+Explore Conference
+
+Include a subtle countdown timer to:
+
+19 December 2026
+
+
+Do not invent a conference theme if it isn't present in the brochure.
+
+10. HOME PAGE — IAP HOWRAH SECTION
+
+Explain:
+
+What does IAP Howrah do?
+
+Create professional placeholder/content if the exact historical text is not available.
+
+Discuss concepts such as:
+
+pediatric healthcare
+professional development
+academic activities
+continuing medical education
+pediatrician collaboration
+child health awareness
+medical conferences
+professional networking
+
+Do not present invented claims as official facts.
+
+If exact information is unavailable, clearly structure the content so it can easily be replaced later.
+
+11. NOTICE / ANNOUNCEMENT SCROLLER
+
+The homepage should contain a professional notice ticker.
+
+Example:
+
+45th WB PEDICON 2026 | 19–20 December 2026 | The Park Hotel, Kolkata
+
+
+Make the notice system easy to update.
+
+Use JavaScript or editable HTML data rather than hardcoding the information throughout multiple pages.
+
+12. TESTIMONIAL SECTION
+
+Create a testimonial section featuring respected pediatricians/doctors.
+
+However:
+
+IMPORTANT
+
+Do NOT invent real doctors' names, qualifications, testimonials, or photographs.
+
+If actual testimonials are unavailable:
+
+Use clearly identifiable placeholders such as:
+
+Dr. [Name]
+Senior Pediatrician
+IAP Howrah
+
+
+and:
+
+“Professional testimonial placeholder.”
+
+
+Make replacing these later extremely easy.
+
+Use professional placeholder portraits if real images are unavailable.
+
+13. HOMEPAGE SLIDESHOW / CAROUSEL
+
+Create a premium image carousel featuring:
+
+IAP Howrah activities
+previous conferences
+pediatric medical activities
+WB Pedicon
+conference venue
+medical education
+
+If images are unavailable, use professional placeholder images,do not generate images.
+
+All images should be stored under:
+
+/images/
+
+
+Use lazy loading where appropriate.
+
+14. ABOUT US PAGE
+
+Create:
+
+about.html
+
+
+Sections:
+
+About IAP Howrah
+History
+Mission
+Vision
+Constitution
+
+Provide a button:
+
+Download Constitution PDF
+
+If the PDF isn't supplied, create the UI with a placeholder path such as:
+
+/images/constitution.pdf
+
+
+and make it easy to replace.
+
+What IAP Howrah Does
+
+Explain the organization's professional and academic role.
+
+IAP Howrah Timeline
+
+Create a visually attractive timeline showing:
+
+foundation/history
+important milestones
+previous activities
+recent years [2024-2026]
+
+If exact dates are unavailable, use clearly marked placeholders instead of inventing historical facts.
+
+15. COMMITTEE PAGE
+
+Use:
+
+committee.html
+
+
+Create sections for:
+
+Office Bearers
+Organizing Committee
+Scientific Committee
+Advisory Committee
+
+Use professional cards containing:
+
+photograph
+name
+designation
+role
+
+Do not fabricate real names.
+
+If committee data is not present in the supplied materials, use placeholders that can be replaced easily.
+
+Example:
+
+Dr. [Name]
+President
+IAP Howrah
+
+16. 45th WB PEDICON CONFERENCE PAGE
+
+Create:
+
+conference.html
+
+
+This should be the main conference information hub.
+
+Display prominently:
+
+45th WB PEDICON
+19–20 December 2026
+The Park Hotel, Kolkata
+
+Include:
+
+conference introduction
+event highlights
+organizing bodies
+important announcements
+registration CTA
+venue preview
+scientific program preview
+speaker preview
+conference gallery
+sponsor section
+
+Use the supplied brochure.jpeg as the primary conference visual reference.
+
+17. BROCHURE INFORMATION
+
+The supplied brochure contains the following confirmed information.
+
+Conference
+
+45th WB PEDICON
+
+Dates
+
+19–20 December 2026
+
+Venue
+
+The Park, Kolkata
+
+Use the official venue naming appropriately as:
+
+The Park Hotel, Kolkata
+
+Registration Fees
+
+According to the supplied brochure:
+
+Category	Up to 30 September 2026	1 October – 31 October 2026
+Delegates	₹2,500	₹3,000
+PGT	₹1,500	₹2,000
+Senior Citizen (>65 years)	Free	Free
+Early Bird
+
+Early Bird Discount
+
+Offer valid till:
+
+30 September 2026
+
+Professional Conference Partner
+
+The brochure states:
+
+ROSHNI ENTERPRISE EVENT MANAGEMENT
+
+and provides the conference contact number shown in the brochure.
+
+Use the exact supplied brochure information where appropriate.
+
+18. IMPORTANT — DO NOT INVENT REGISTRATION PRICES
+
+The registration form should contain:
+
+Name *
+Mobile Number / WhatsApp Number *
+Alternate Number *
+Email *
+Category *
+Institution *
+Designation *
+
+
+Categories:
+
+PGT
+Delegate
+Faculty
+
+
+However, the supplied brochure only clearly provides pricing for:
+
+PGT
+Delegate
+Senior Citizen
+
+There is no confirmed Faculty fee in the supplied information.
+
+Therefore:
+
+DO NOT INVENT A FACULTY REGISTRATION PRICE.
+
+Make the pricing configuration editable in JavaScript:
+
+const registrationFees = {
+    PGT: {
+        earlyBird: 1500,
+        regular: 2000
+    },
+    Delegate: {
+        earlyBird: 2500,
+        regular: 3000
+    },
+    Faculty: {
+        earlyBird: null,
+        regular: null
+    }
+};
+
+
+If Faculty pricing is unavailable, display:
+
+Fee details will be announced
+
+
+or allow the administrator to configure it later.
+
+19. REGISTRATION PAGE — register.html
+
+Create a professional conference registration page.
+
+The form should include:
+
+Personal Information
+Full Name *
+Mobile / WhatsApp Number *
+Alternate Number
+Email *
+
+Professional Information
+Category *
+Institution *
+Designation *
+
+
+Category:
+
+PGT
+Delegate
+Faculty
+
+
+Add any additional registration fields only if useful and clearly label them.
+
+20. REGISTRATION FEE CALCULATION
+
+The registration page should automatically determine:
+
+current registration period
+applicable fee
+early-bird status
+
+Early bird deadline:
+
+30 September 2026
+
+
+Second pricing period:
+
+1 October – 31 October 2026
+
+
+After the supplied pricing period, do not invent a fee.
+
+Instead show:
+
+Registration fee details will be updated soon.
+
+
+or make the later fee configurable.
+
+21. REGISTRATION PAYMENT
+
+Because the website is hosted on GitHub Pages:
+
+DO NOT attempt to upload files directly to GitHub.
+
+Use:
+
+Frontend
+    ↓
+Google Apps Script
+    ↓
+Google Sheets
+    ↓
+Google Drive
+
+
+The frontend submits registration information to a Google Apps Script Web App.
+
+If payment screenshot upload is required:
+
+User selects screenshot
+JavaScript converts/prepares it
+Sends it to Apps Script
+Apps Script stores it in Google Drive
+Apps Script stores the Drive URL in Google Sheets
+
+Keep file-size limits reasonable.
+
+22. GOOGLE SHEETS DATABASE
+
+Use Google Sheets as the database.
+
+Recommended columns:
+
+Registration ID
+Timestamp
+Name
+Mobile
+Alternate Number
+Email
+Category
+Institution
+Designation
+Registration Fee
+voucher used
+Registration Period
+Payment Status
+Payment Screenshot URL
+Created At
+
+
+Optionally:
+
+Confirmation Sent
+Notes
+
+23. UNIQUE REGISTRATION ID
+
+Automatically generate a unique registration ID.
+
+Example:
+
+WBP26-0001
+WBP26-0002
+WBP26-0003
+
+
+Do not rely only on the row number.
+
+The ID should be generated server-side where possible.
+
+24. DUPLICATE REGISTRATION PROTECTION
+
+Prevent accidental duplicate registrations.
+
+Check:
+
+email
+primary mobile number
+
+If a matching registration already exists, return a friendly response:
+
+A registration already exists for this email/mobile number.
+
+Registration ID:
+WBP26-XXXX
+
+
+Do not silently create duplicates.
+
+25. SUCCESS SCREEN
+
+After successful registration display a premium confirmation screen:
+
+Registration Successful
+
+Thank you for registering for
+45th WB PEDICON 2026
+
+Registration ID:
+WBP26-XXXX
+
+
+Display:
+
+name
+category
+fee
+registration ID
+conference date
+venue
+
+Add buttons:
+
+Download Confirmation
+View Registration
+Contact Organizers
+
+26. DASHBOARD PAGE
+
+Create:
+
+dashboard.html
+
+
+The dashboard should allow a registrant to view their registration.
+
+Use registration ID + email/mobile for lookup.
+
+Display:
+
+registration status
+attendee name
+category
+institution
+designation
+payment status
+registration ID
+
+Do not expose other registrants' information.
+
+27. QR CODE
+
+Generate a QR code for the registration.
+
+The QR should encode something like:
+
+Registration ID
+
+
+or a secure verification URL.
+
+Example:
+
+WBP26-0042
+
+
+The dashboard should display:
+
+Entry QR Code
+
+and provide:
+
+Download Badge
+
+28. PRINTABLE REGISTRATION RECEIPT
+
+Create a printable confirmation/receipt containing:
+
+45th WB PEDICON 2026
+
+19–20 December 2026
+The Park Hotel, Kolkata
+
+Registration ID
+Name
+Category
+Institution
+Designation
+Payment Status
+QR Code
+
+
+Make it print-friendly using CSS.
+
+29. PROGRAM PAGE
+
+Create:
+
+program.html
+
+
+Design a premium scientific-program interface.
+
+Use:
+
+Day 1 / Day 2 tabs
+timeline
+session cards
+speaker names
+session titles
+venue/room
+time
+IMPORTANT
+
+Do not invent the scientific schedule.
+
+If the official schedule is not available yet:
+
+Display:
+
+Scientific Programme
+Coming Soon
+
+
+with a professional placeholder layout.
+
+30. SPEAKERS PAGE
+
+Create:
+
+speakers.html
+
+
+Include:
+
+speaker cards
+photo
+name
+designation
+institution
+topic
+
+Clicking a speaker can open a modal.
+
+IMPORTANT
+
+Do not fabricate real speaker information.
+
+Use placeholders until official speaker information is provided.
+
+31. GALLERY PAGE
+
+Create:
+
+gallery.html
+
+
+Create a premium responsive gallery.
+
+Categories can include:
+
+Previous Events
+Academic Activities
+IAP Howrah
+WB PEDICON
+Conference Moments
+
+
+Features:
+
+masonry/grid layout
+lightbox
+next/previous navigation
+lazy loading
+responsive design
+
+If photographs aren't available:
+
+Use placeholder images.
+
+Do not use random images of identifiable doctors.
+
+32. VENUE PAGE
+
+Create:
+
+venue.html
+
+
+Venue:
+
+The Park Hotel, Kolkata
+
+Include:
+
+venue name
+address
+conference information
+Google Maps
+nearby transport
+airport information
+railway information
+nearby hotels
+important landmarks
+
+Add:
+
+Get Directions
+
+button.
+
+Use a Google Maps embed if possible.
+
+Do not fabricate exact hotel distances if they haven't been verified.
+
+33. SPONSORS PAGE
+
+Create:
+
+sponsors.html
+
+
+Include sponsor tiers such as:
+
+Platinum
+Gold
+Silver
+Partner
+Exhibitor
+
+
+BUT:
+
+Do not invent actual sponsors.
+
+Use placeholders until official sponsors are supplied.
+
+Example:
+
+Sponsor Logo
+Coming Soon
+
+
+Add:
+
+Become a Sponsor
+
+CTA.
+
+34. CONTACT PAGE
+
+Modify:
+
+contact.html
+
+
+Include:
+
+contact form
+organizer contact information
+conference email
+phone/WhatsApp
+venue
+map
+social links
+
+The form should integrate with Google Apps Script where appropriate.
+
+Fields:
+
+Name
+Email
+Mobile
+Subject
+Message
+
+35. WHATSAPP CTA
+
+Add a floating WhatsApp button if the official conference WhatsApp/phone number is available from the brochure.
+
+Do not invent a WhatsApp number.
+
+If only a phone number is provided, make the WhatsApp CTA configurable in one place.
+
+36. JAVASCRIPT ARCHITECTURE
+
+Use:
+
+script.js
+
+
+for shared functionality.
+
+Implement reusable functions for:
+
+navbar
+mobile menu
+scroll effects
+countdown
+carousel
+testimonials
+FAQ
+registration fee calculation
+form validation
+Google Apps Script API communication
+registration lookup
+QR generation
+dashboard
+printable receipt
+gallery lightbox
+
+Avoid unnecessary dependencies.
+
+37. CSS ARCHITECTURE
+
+Use:
+
+style.css
+
+
+Create a maintainable design system.
+
+Define CSS variables:
+
+:root {
+    --primary: #0b2c4d;
+    --secondary: #147d7d;
+    --accent: #b08a3c;
+    --gold: #c6a15b;
+    --light: #f7f8f5;
+    --white: #ffffff;
+    --text: #24303a;
+}
+
+
+You may adjust colors after reviewing the brochure.
+
+Use:
+
+CSS Grid
+Flexbox
+responsive breakpoints
+CSS animations
+transitions
+accessible focus states
+38. ANIMATIONS
+
+Use subtle animations:
+
+fade-up
+fade-in
+slide-in
+card hover
+navbar transition
+counter animation
+image reveal
+carousel transitions
+
+Do NOT over-animate.
+
+Respect:
+
+prefers-reduced-motion
+
+
+for accessibility.
+
+39. IMAGE HANDLING
+
+All local images should be placed in:
+
+/images/
+
+
+Use descriptive filenames.
+
+Example:
+
+/images/iap-howrah-logo.png
+/images/wb-pedicon-logo.png
+/images/hero.jpg
+/images/committee-placeholder.jpg
+/images/speaker-placeholder.jpg
+/images/gallery-placeholder-01.jpg
+
+
+If images are unavailable, use tasteful placeholder images.
+
+IMPORTANT
+
+Never claim placeholder people are actual doctors or committee members.
+
+40. BROCHURE ASSET
+
+Use:
+
+brochure.jpeg
+
+
+as the source/reference for the conference branding.
+
+Do not distort the brochure.
+
+If appropriate, display a brochure section:
+
+Download Conference Brochure
+
+with:
+
+View Brochure
+
+and
+
+Download Brochure
+
+buttons.
+
+41. SEO
+
+Implement basic SEO on every page.
+
+Each page should have:
+
+unique <title>
+meta description
+Open Graph metadata
+semantic HTML
+proper headings
+descriptive image alt text
+canonical URL placeholder
+
+Example title:
+
+45th WB PEDICON 2026 | IAP Howrah
+
+42. ACCESSIBILITY
+
+Implement:
+
+semantic HTML
+keyboard navigation
+visible focus states
+ARIA labels where necessary
+accessible forms
+proper labels
+sufficient color contrast
+alt text
+reduced-motion support
+
+Do not rely solely on color to communicate status.
+
+43. PERFORMANCE
+
+Optimize for GitHub Pages.
+
+Use:
+
+lazy loading
+optimized images
+minimal JavaScript
+no unnecessary frameworks
+defer scripts where appropriate
+efficient CSS
+minimal external dependencies
+44. GOOGLE APPS SCRIPT — Code.gs
+
+Modify the existing:
+
+Code.gs
+
+
+instead of creating an unrelated backend.
+
+Implement APIs for:
+
+Registration
+POST registration
+
+Registration lookup
+GET/POST lookup
+
+Contact form
+POST contact
+
+Optional payment screenshot upload
+POST file
+
+
+Use Google Sheets and Google Drive.
+
+45. GOOGLE APPS SCRIPT SECURITY
+
+Do not expose:
+
+spreadsheet IDs
+Drive folder IDs unnecessarily in frontend
+private data
+admin credentials
+
+Keep configuration in Apps Script.
+
+Example:
+
+const CONFIG = {
+    SHEET_ID: 'YOUR_SHEET_ID',
+    DRIVE_FOLDER_ID: 'YOUR_DRIVE_FOLDER_ID'
+};
+
+
+The frontend should only know the deployed Apps Script Web App URL.
+
+46. GOOGLE SHEETS SETUP
+
+Provide clear setup instructions.
+
+Create a sheet named:
+
+Registrations
+
+
+with headers:
+
+Registration ID
+Timestamp
+Name
+Mobile
+Alternate Number
+Email
+Category
+Institution
+Designation
+Registration Fee
+Registration Period
+Payment Status
+Payment Screenshot URL
+
+
+Create another optional sheet:
+
+Contacts
+
+
+with:
+
+Timestamp
+Name
+Email
+Mobile
+Subject
+Message
+
+47. APPS SCRIPT DEPLOYMENT GUIDE
+
+Provide exact steps:
+
+Create Google Sheet
+Open Extensions → Apps Script
+Add Code.gs
+Configure Sheet ID
+Configure Drive folder
+Deploy as Web App
+Set:
+Execute as: Me
+Who has access: Anyone
+Copy Web App URL
+Add URL to script.js
+Test registration
+Test duplicate detection
+Test Google Drive upload
+Test dashboard lookup
+
+Make the instructions suitable for a non-expert.
+
+
+48. IMPORTANT GITHUB PAGES LIMITATION
+
+Remember:
+
+GitHub Pages is static hosting.
+
+Therefore:
+
+GitHub Pages
+      ↓
+Google Apps Script
+      ↓
+Google Sheets
+      ↓
+Google Drive
+
+
+Do not implement a PHP, Node.js, Python, MySQL, or Firebase backend unless explicitly requested.
+
+49. ERROR HANDLING
+
+Registration should gracefully handle:
+
+invalid email
+invalid phone
+missing fields
+duplicate registration
+Apps Script unavailable
+network error
+file upload failure
+invalid registration ID
+unknown category
+unavailable pricing
+
+Show friendly user-facing messages.
+
+Do not expose raw JavaScript errors.
+
+50. FORM VALIDATION
+
+Required fields:
+
+Name
+Mobile
+Email
+Category
+Institution
+Designation
+
+
+Validate:
+
+Mobile
+
+Accept Indian mobile numbers appropriately.
+
+Email
+
+Validate standard email format.
+
+Name
+
+Prevent empty/invalid submissions.
+
+Category
+
+Only allow configured categories.
+
+51. REGISTRATION CONFIGURATION
+
+Put conference configuration in one place.
+
+For example:
+
+const CONFERENCE_CONFIG = {
+    name: "45th WB PEDICON",
+    date: "19–20 December 2026",
+    venue: "The Park Hotel, Kolkata",
+    earlyBirdDeadline: "2026-09-30",
+    secondFeeStart: "2026-10-01"
+};
+
+
+Registration fees should also be configurable from one location.
+
+This makes future changes easy.
+
+52. DO NOT HARDCODE INFORMATION EVERYWHERE
+
+Conference information such as:
+
+45th WB PEDICON
+19–20 December 2026
+The Park Hotel, Kolkata
+
+
+should not be manually repeated in dozens of unrelated JavaScript/HTML sections.
+
+Use reusable configuration/data where practical.
+
+53. CONTENT ACCURACY RULE
+
+This is extremely important.
+
+Use three levels of information:
+
+CONFIRMED
+
+Information visible in the supplied brochure or explicitly provided by me.
+
+PLACEHOLDER
+
+Information that hasn't been supplied.
+
+CONFIGURABLE
+
+Information likely to change, such as:
+
+registration fees
+committee members
+speakers
+sponsors
+program
+contact details
+
+Never silently invent official facts.
+
+54. REMOVE OLD ECPR CONTENT
+
+The existing project contains:
+
+register-ecpr.html
+
+
+This appears to belong to an older project.
+
+Inspect it.
+
+If it contains ECPR-specific:
+
+branding
+registration
+pricing
+content
+JavaScript
+forms
+
+remove/replace those references for WB PEDICON.
+
+Do not leave confusing ECPR branding anywhere in the new website.
+
+If the file is no longer needed, either:
+
+convert it into the new registration page, or
+remove it after ensuring no dependency exists.
+55. REUSABLE COMPONENTS
+
+Keep these shared:
+
+nav.html
+footer.html
+
+
+All pages should have the same:
+
+navigation
+footer
+colors
+typography
+buttons
+spacing
+responsive behavior
+
+Avoid each page looking like it was designed separately.
+
+56. HOMEPAGE SECTION ORDER
+
+Use approximately:
+
+Navbar
+
+Hero
+↓
+45th WB PEDICON Highlight
+↓
+Countdown
+↓
+Important Notice
+↓
+About IAP Howrah
+↓
+Conference Preview
+↓
+Why Attend
+↓
+Testimonials
+↓
+Conference/Society Gallery Carousel
+↓
+Speakers Preview
+↓
+Registration CTA
+↓
+Venue Preview
+↓
+Sponsors
+↓
+Contact
+↓
+Footer
+
+
+You may adjust this if a better UX structure is found.
+
+57. CONFERENCE REGISTRATION CTA
+
+Throughout the website, use consistent CTA wording:
+
+REGISTER NOW
+
+Secondary CTA:
+
+VIEW PROGRAM
+
+or:
+
+EXPLORE CONFERENCE
+
+Do not use too many competing CTA styles.
+
+58. VISUAL DETAILS
+
+Add subtle premium details:
+
+thin gold separators
+elegant section labels
+medical-inspired line icons
+soft card shadows
+rounded but not overly rounded cards
+subtle borders
+tasteful hover effects
+large editorial typography
+generous whitespace
+
+Avoid excessive:
+
+neon colors
+gradients
+huge rounded blobs
+glass effects everywhere
+animated backgrounds
+unnecessary 3D effects
+
+59. FINAL DELIVERABLE
+
+After modifying the project, provide:
+
+FILES
+index.html
+about.html
+conference.html
+committee.html
+program.html
+speakers.html
+gallery.html
+register.html
+dashboard.html
+venue.html
+sponsors.html
+contact.html
+
+nav.html
+footer.html
+
+style.css
+script.js
+Code.gs
+
+
+plus:
+
+/images/
+
+60. ALSO PROVIDE
+A. Google Sheets schema
+B. Google Apps Script code
+C. Google Drive upload implementation
+D. Registration ID generation
+E. Duplicate registration detection
+F. Dashboard lookup
+G. QR code generation
+H. Printable confirmation
+I. GitHub Pages deployment instructions
+J. Google Apps Script deployment instructions
+K. Configuration instructions
+61. CODE QUALITY
+
+Write clean, maintainable code.
+
+Avoid:
+
+unnecessary libraries
+duplicated CSS
+duplicated JavaScript
+inline JavaScript where avoidable
+inline styles
+hardcoded configuration everywhere
+fake data presented as real
+broken links
+console errors
+
+Use clear comments for areas that need future updating.
+
+For example:
+
+// ==========================================
+// CONFERENCE CONFIGURATION
+// Update conference details here
+// ==========================================
+
+62. FINAL TESTING CHECKLIST
+
+Before considering the project complete, verify:
+
+Navigation
+ All pages load
+ Mobile menu works
+ Active page state works
+ Logo links home
+Registration
+ Required validation works
+ Category selection works
+ Fee calculation works
+ Early bird calculation works
+ Duplicate detection works
+ Registration ID generated
+ Google Sheet receives data
+ Payment screenshot uploads correctly if enabled
+ Success page works
+ Dashboard lookup works
+ QR code works
+ Print/download works
+Design
+ Mobile responsive
+ Tablet responsive
+ Desktop responsive
+ No horizontal overflow
+ Images load
+ Placeholder images work
+ Animations work
+ Reduced-motion support works
+Content
+ No ECPR references remain
+ No Apollo references remain
+ No fabricated doctors
+ No fabricated speakers
+ No fabricated sponsors
+ No fabricated scientific schedule
+ Conference date correct
+ Venue correct
+ Registration fees correct
+63. MOST IMPORTANT INSTRUCTION
+
+Do not simply generate a new template.
+
+First inspect the existing project files and understand what is already implemented.
+
+Then:
+
+Preserve useful code
+Remove obsolete ECPR content
+Refactor existing components
+Add missing pages
+Implement the new WB PEDICON registration system
+Integrate Google Sheets
+Improve the visual design
+Make everything responsive
+Test the complete flow
+
+The finished website should look like a real professional Indian pediatric medical society + national conference website, suitable for public launch.
+
+The key conference information that must be prominently and consistently displayed is:
+
+45th WB PEDICON 2026
+19–20 December 2026
+The Park Hotel, Kolkata
+
+Registration pricing from the supplied brochure:
+
+PGT: ₹1,500 early bird / ₹2,000 from 1 October–31 October 2026
+Delegate: ₹2,500 early bird / ₹3,000 from 1 October–31 October 2026
+Senior Citizen (>65 years): Free
+Faculty: pricing not provided — do not invent it
+
+Early bird deadline:
+
+30 September 2026
+
+Use the supplied brochure and existing project files as primary references. If information is unavailable, use clean placeholders rather than fabricated official information.
+
+Build the website as a polished, production-ready project rather than a demonstration/mockup.
