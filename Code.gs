@@ -24,7 +24,10 @@ const EMAIL_FROM_NAME = '45th WB PEDICON 2026 — IAP Howrah';
 const EMAIL_CC = 'mukherjeerohit301@gmail.com';
 
 // Email address that will receive backend failure alerts
-const FAILURE_EMAIL = 'semiezecon@gmail.com';
+const FAILURE_EMAIL = 'mukherjeerohit301@gmail.com';
+
+// Google Drive Folder ID to store generated QR codes
+const UPLOAD_FOLDER_ID = '1mG7hBhJD0O1mdJtJy5fXyP9jyw4SC1-L'; // Using EZECON one as default placeholder, user can modify
 
 
 // ============================================================
@@ -113,10 +116,11 @@ function handleRegistration(data) {
       'Payment Status',
       'Payment ID',
       'Is Free',
+      'QR Code URL',
       'Notes'
     ]);
 
-    sheet.getRange('A1:O1').setFontWeight('bold');
+    sheet.getRange('A1:P1').setFontWeight('bold');
   }
 
 
@@ -213,6 +217,30 @@ function handleRegistration(data) {
 
 
     // --------------------------------------------------------
+    // 3.5 Generate QR Code and Save to Google Drive
+    // --------------------------------------------------------
+    var qrText = '45th WB PEDICON 2026\nReg ID: ' + regId + '\nName: ' + (data.name || '') +
+      '\nCategory: ' + (data.category || '') + '\nAmount: Rs.' + (data.amount || 0);
+    var qrApiUrl = 'https://quickchart.io/qr?text=' + encodeURIComponent(qrText) + '&margin=2&size=300';
+    var savedQrUrl = qrApiUrl;
+    var qrBlob = null;
+
+    try {
+      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== 'YOUR_GDRIVE_FOLDER_ID_HERE') {
+        var response = UrlFetchApp.fetch(qrApiUrl);
+        qrBlob = response.getBlob().getAs(MimeType.PNG).setName('QR_' + regId + '.png');
+        var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+        var qrFolders = parentFolder.getFoldersByName('QR');
+        var qrFolder = qrFolders.hasNext() ? qrFolders.next() : parentFolder.createFolder('QR');
+        var qrFile = qrFolder.createFile(qrBlob);
+        qrFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        savedQrUrl = qrFile.getUrl();
+      }
+    } catch (qrErr) {
+      console.error('QR save failed: ' + qrErr.toString());
+    }
+
+    // --------------------------------------------------------
     // 4. Append registration to Sheet
     // --------------------------------------------------------
 
@@ -246,6 +274,8 @@ function handleRegistration(data) {
 
       data.isFree ? 'Yes' : 'No',
 
+      savedQrUrl,
+
       '' // Notes
 
     ]);
@@ -261,7 +291,7 @@ function handleRegistration(data) {
 
     try {
 
-      sendConfirmationEmail(regId, data);
+      sendConfirmationEmail(regId, data, savedQrUrl, qrBlob);
 
     } catch (emailErr) {
 
@@ -566,21 +596,40 @@ function handleContact(data) {
 // SEND CONFIRMATION EMAIL
 // ============================================================
 
-function sendConfirmationEmail(regId, data) {
+function sendConfirmationEmail(regId, data, savedQrUrl, qrBlob) {
 
   const subject =
     `Registration Confirmed - 45th WB PEDICON 2026 [${regId}]`;
 
+  var inlineBlob = null, attachBlob = null, hasQr = false;
 
-  const body =
+  if (qrBlob) {
+    try {
+      inlineBlob = qrBlob.copyBlob().setName('qrCode.png');
+      attachBlob = qrBlob.copyBlob().setName('WBP26_QR_' + regId + '.png');
+      hasQr = true;
+    } catch (e) { console.log('QR blob copy failed: ' + e.toString()); }
+  }
+
+  const plainBody =
 
 `Dear ${data.name || 'Participant'},
 
 Thank you for registering for the 45th WB PEDICON 2026.
 
-Your Registration ID is: ${regId}
+Your Registration Details:
+─────────────────────────────────
+Registration ID : ${regId}
+Category        : ${data.category || ''}
+Amount Paid     : ₹${data.amount || 0}
+Payment ID      : ${data.paymentId || 'N/A'}
+─────────────────────────────────
 
-You can view your QR code and download your receipt by visiting the dashboard on our website and logging in with your Registration ID and email/mobile number.
+QR Code: ${savedQrUrl}
+
+${hasQr ? 'Please present the attached QR code at the venue.\n\n' : ''}Event Details:
+Dates : 19–20 December 2026 (Saturday & Sunday)
+Venue : The Park Hotel, Kolkata
 
 Regards,
 Organizing Committee
@@ -588,6 +637,12 @@ Organizing Committee
 IAP Howrah
 `;
 
+  var htmlBody = plainBody.replace(/\n/g, '<br>');
+  if (hasQr) {
+    htmlBody += '<br><br><b>Your Event QR Code:</b><br>' +
+      '<img src="cid:qrCode" alt="Event QR Code" style="width:200px;height:200px;border:1px solid #ccc;"/>' +
+      '<br><small>QR code also attached.</small>';
+  }
 
   // ----------------------------------------------------------
   // Build email options
@@ -601,10 +656,16 @@ IAP Howrah
 
     subject: subject,
 
-    body: body
+    body: plainBody,
+
+    htmlBody: htmlBody
 
   };
 
+  if (hasQr) {
+    emailOptions.inlineImages = { qrCode: inlineBlob };
+    emailOptions.attachments = [attachBlob];
+  }
 
   // ----------------------------------------------------------
   // Add CC automatically

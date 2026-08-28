@@ -58,7 +58,7 @@
   // APPS SCRIPT API URL — Replace with deployed Web App URL
   // ============================================================
   const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbxhBULVF1Pomz1OuI4C69mtE4rK6EIARd3fkYt6tlTVUERJac-TZFhoGoTqQPD3fkU_/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzea5rEa4_hLM-B0TfIrrO2kepjpG4yvOS4pgpOJQYVdDrNPA4raaP5zKEElI2SFOiH/exec',
     RZP_KEY: 'rzp_live_TVAc2I0MUmZ44U',
     ANIMATION_THRESHOLD: 0.15,
     TOAST_DURATION: 4500,
