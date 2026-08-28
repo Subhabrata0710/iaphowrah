@@ -27,7 +27,7 @@ const EMAIL_CC = 'mukherjeerohit301@gmail.com';
 const FAILURE_EMAIL = 'mukherjeerohit301@gmail.com';
 
 // Google Drive Folder ID to store generated QR codes
-const UPLOAD_FOLDER_ID = '1mG7hBhJD0O1mdJtJy5fXyP9jyw4SC1-L'; // Using EZECON one as default placeholder, user can modify
+const UPLOAD_FOLDER_ID = '1BKUq5rWxkEiz5EEfZ_RkQJKzcatPNRzC'; // Using EZECON one as default placeholder, user can modify
 
 
 // ============================================================
