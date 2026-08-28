@@ -59,7 +59,7 @@
   // ============================================================
   const CONFIG = {
     API_URL: 'https://script.google.com/macros/s/AKfycbxhBULVF1Pomz1OuI4C69mtE4rK6EIARd3fkYt6tlTVUERJac-TZFhoGoTqQPD3fkU_/exec',
-    RZP_KEY: 'rzp_test_TVAHpPnupZSw2P',
+    RZP_KEY: 'rzp_live_TVAc2I0MUmZ44U',
     ANIMATION_THRESHOLD: 0.15,
     TOAST_DURATION: 4500,
     LOADER_DELAY: 600
