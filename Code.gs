@@ -13,7 +13,7 @@
 // CONFIGURATION
 // ============================================================
 
-const SHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+const SHEET_ID = '1eInxOSekHiXioWPf8BGDLxCO_2f2nSz-qQNa46Npz3g';
 
 const CONF_PREFIX = 'WBP26'; // ID Prefix (e.g. WBP26-0001)
 
