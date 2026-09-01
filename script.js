@@ -441,7 +441,7 @@
       if (category === 'PGT') {
         uploadContainer.style.display = 'block';
         uploadLabel.textContent = 'Upload Auth Letter from HOD *';
-        regDoc.required = true;
+        regDoc.required = false;
       } else if (category === 'Senior Citizen') {
         uploadContainer.style.display = 'block';
         uploadLabel.textContent = 'Upload ID Proof (Aadhar, PAN, etc.) *';
