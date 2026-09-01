@@ -117,10 +117,13 @@ function handleRegistration(data) {
       'Payment ID',
       'Is Free',
       'QR Code URL',
-      'Notes'
+      'Notes',
+      'Uploaded Docs',
+      'Action',
+      'Status'
     ]);
 
-    sheet.getRange('A1:P1').setFontWeight('bold');
+    sheet.getRange('A1:S1').setFontWeight('bold');
   }
 
 
@@ -224,6 +227,7 @@ function handleRegistration(data) {
     var qrApiUrl = 'https://quickchart.io/qr?text=' + encodeURIComponent(qrText) + '&margin=2&size=300';
     var savedQrUrl = qrApiUrl;
     var qrBlob = null;
+    var qrFileId = null;
 
     try {
       if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== 'YOUR_GDRIVE_FOLDER_ID_HERE') {
@@ -235,70 +239,69 @@ function handleRegistration(data) {
         var qrFile = qrFolder.createFile(qrBlob);
         qrFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         savedQrUrl = qrFile.getUrl();
+        qrFileId = qrFile.getId();
       }
     } catch (qrErr) {
       console.error('QR save failed: ' + qrErr.toString());
     }
 
     // --------------------------------------------------------
+    // 3.6 Process Document Upload
+    // --------------------------------------------------------
+    var savedDocUrl = '';
+    if (data.docData) {
+      try {
+        var decodedDoc = Utilities.base64Decode(data.docData);
+        var docBlob = Utilities.newBlob(decodedDoc, data.docMimeType, data.docName);
+        if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== 'YOUR_GDRIVE_FOLDER_ID_HERE') {
+          var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+          var docFolders = parentFolder.getFoldersByName('Documents');
+          var docFolder = docFolders.hasNext() ? docFolders.next() : parentFolder.createFolder('Documents');
+          var docFile = docFolder.createFile(docBlob);
+          docFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+          savedDocUrl = docFile.getUrl();
+        }
+      } catch (docErr) {
+        console.error('Document save failed: ' + docErr.toString());
+        savedDocUrl = 'Upload Failed: ' + docErr.toString();
+      }
+    }
+
+    // --------------------------------------------------------
     // 4. Append registration to Sheet
     // --------------------------------------------------------
-
     sheet.appendRow([
-
       regId,
-
       timestamp,
-
       data.name || '',
-
       data.mobile || '',
-
       data.altMobile || '',
-
       data.email || '',
-
       data.category || '',
-
       data.institution || '',
-
       data.designation || '',
-
       data.amount || 0,
-
       data.period || '',
-
       paymentStatus,
-
       data.paymentId || '',
-
       data.isFree ? 'Yes' : 'No',
-
       savedQrUrl,
-
-      '' // Notes
-
+      '', // Notes
+      savedDocUrl,
+      '', // Action
+      qrFileId // Temporarily store QR ID in Status column for easy retrieval on delete
     ]);
 
 
     // --------------------------------------------------------
-    // 5. Send Confirmation Email
-    //
-    // IMPORTANT:
-    // If email fails, registration remains successful.
-    // The email error is logged and a failure alert is sent.
+    // 5. Send Acknowledgment Email
     // --------------------------------------------------------
-
     try {
-
-      sendConfirmationEmail(regId, data, savedQrUrl, qrBlob);
-
+      if (data.category !== 'Faculty') {
+        sendAcknowledgmentEmail(regId, data);
+      }
     } catch (emailErr) {
-
-      console.error(
-        'Confirmation email failed:',
-        emailErr
-      );
+      console.error('Acknowledgment email failed:', emailErr);
 
       // Notify admin about email failure
       sendFailureEmail(
@@ -593,27 +596,173 @@ function handleContact(data) {
 
 
 // ============================================================
-// SEND CONFIRMATION EMAIL
+// SEND ACKNOWLEDGMENT EMAIL
 // ============================================================
 
-function sendConfirmationEmail(regId, data, savedQrUrl, qrBlob) {
+function sendAcknowledgmentEmail(regId, data) {
+  const subject = `Registration Received - 45th WB PEDICON 2026 [${regId}]`;
 
-  const subject =
-    `Registration Confirmed - 45th WB PEDICON 2026 [${regId}]`;
+  const plainBody = `Dear ${data.name || 'Participant'},
+
+We have received your registration for the 45th WB PEDICON 2026.
+We will confirm your registration within 48H over mail.
+If you receive no confirmation mail, please contact support.
+
+Your Registration Details:
+─────────────────────────────────
+Registration ID : ${regId}
+Category        : ${data.category || ''}
+Amount Paid     : ₹${data.amount || 0}
+Payment ID      : ${data.paymentId || 'N/A'}
+─────────────────────────────────
+
+Regards,
+Organizing Committee
+45th WB PEDICON 2026
+IAP Howrah
+`;
+
+  var htmlBody = plainBody.replace(/\n/g, '<br>');
+
+  const emailOptions = {
+    to: data.email,
+    name: EMAIL_FROM_NAME,
+    subject: subject,
+    body: plainBody,
+    htmlBody: htmlBody
+  };
+
+  MailApp.sendEmail(emailOptions);
+}
+
+
+// ============================================================
+// ON EDIT TRIGGER (MANUAL CONFIRMATION / REJECTION)
+// ============================================================
+
+function onSpreadsheetEdit(e) {
+  if (!e || !e.range) return;
+
+  const sheet = e.range.getSheet();
+  if (sheet.getName() !== 'Registrations') return;
+
+  const col = e.range.getColumn();
+  if (col !== 18) return; // Action column (R)
+
+  const val = (e.value || '').toLowerCase().trim();
+  if (val !== 'send' && val !== 'reject') return;
+
+  const row = e.range.getRow();
+  if (row <= 1) return;
+
+  // Clear the cell so it's ready for another action if needed, or leave it. We'll leave it.
+  
+  // Set status to pending
+  sheet.getRange(row, 19).setValue('Pending (1 min delay)...');
+
+  // Schedule trigger for 1 minute from now
+  const trigger = ScriptApp.newTrigger('processActionTrigger')
+    .timeBased()
+    .after(60000)
+    .create();
+
+  // Save the trigger data
+  PropertiesService.getScriptProperties().setProperty(
+    trigger.getUniqueId(),
+    JSON.stringify({ row: row, action: val })
+  );
+}
+
+function processActionTrigger(e) {
+  const triggerId = e.triggerUid;
+  const props = PropertiesService.getScriptProperties();
+  const dataStr = props.getProperty(triggerId);
+
+  // Delete the trigger so it doesn't run again or pile up
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getUniqueId() === triggerId) {
+      ScriptApp.deleteTrigger(triggers[i]);
+      break;
+    }
+  }
+
+  if (!dataStr) return;
+  const tData = JSON.parse(dataStr);
+  props.deleteProperty(triggerId);
+
+  const row = tData.row;
+  const action = tData.action;
+
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName('Registrations');
+  if (!sheet) return;
+
+  const rowData = sheet.getRange(row, 1, 1, 19).getValues()[0];
+  const regId = rowData[0];
+  const name = rowData[2];
+  const email = rowData[5];
+  const category = rowData[6];
+  const amount = rowData[9];
+  const paymentId = rowData[12];
+  const savedQrUrl = rowData[14];
+  const qrFileId = rowData[18]; // Stored temporarily in column S on creation
+
+  if (action === 'send') {
+    try {
+      sendConfirmationEmail(regId, {
+        name: name,
+        category: category,
+        amount: amount,
+        paymentId: paymentId,
+        email: email
+      }, savedQrUrl, qrFileId);
+
+      sheet.getRange(row, 19).setValue('Success ' + new Date().toISOString());
+    } catch (err) {
+      sheet.getRange(row, 19).setValue('Failed: ' + err.toString() + ' ' + new Date().toISOString());
+    }
+  } else if (action === 'reject') {
+    try {
+      // Delete QR code file from Google Drive
+      if (qrFileId) {
+        try {
+          DriveApp.getFileById(qrFileId).setTrashed(true);
+        } catch (driveErr) {
+          console.error("Could not delete QR file: " + driveErr);
+        }
+      }
+
+      // Clear the registration ID and status
+      sheet.getRange(row, 1).setValue(''); // Clear Reg ID
+      sheet.getRange(row, 15).setValue(''); // Clear QR URL
+      sheet.getRange(row, 18).setValue(''); // Clear Action
+      sheet.getRange(row, 19).setValue('Rejected & Deleted ' + new Date().toISOString());
+    } catch (err) {
+      sheet.getRange(row, 19).setValue('Reject Failed: ' + err.toString());
+    }
+  }
+}
+
+// ============================================================
+// SEND CONFIRMATION EMAIL (Modified for manual trigger)
+// ============================================================
+
+function sendConfirmationEmail(regId, data, savedQrUrl, qrFileId) {
+  const subject = `Registration Confirmed - 45th WB PEDICON 2026 [${regId}]`;
 
   var inlineBlob = null, attachBlob = null, hasQr = false;
 
-  if (qrBlob) {
+  if (qrFileId) {
     try {
+      var qrBlob = DriveApp.getFileById(qrFileId).getBlob();
       inlineBlob = qrBlob.copyBlob().setName('qrCode.png');
       attachBlob = qrBlob.copyBlob().setName('WBP26_QR_' + regId + '.png');
       hasQr = true;
-    } catch (e) { console.log('QR blob copy failed: ' + e.toString()); }
+    } catch (e) { console.log('QR blob fetch failed: ' + e.toString()); }
   }
 
-  const plainBody =
-
-`Dear ${data.name || 'Participant'},
+  const plainBody = `Dear ${data.name || 'Participant'},
 
 Thank you for registering for the 45th WB PEDICON 2026.
 
@@ -625,7 +774,7 @@ Amount Paid     : ₹${data.amount || 0}
 Payment ID      : ${data.paymentId || 'N/A'}
 ─────────────────────────────────
 
-QR Code: ${savedQrUrl}
+QR Code: ${savedQrUrl || 'N/A'}
 
 ${hasQr ? 'Please present the attached QR code at the venue.\n\n' : ''}Event Details:
 Dates : 19–20 December 2026 (Saturday & Sunday)
@@ -644,22 +793,12 @@ IAP Howrah
       '<br><small>QR code also attached.</small>';
   }
 
-  // ----------------------------------------------------------
-  // Build email options
-  // ----------------------------------------------------------
-
   const emailOptions = {
-
     to: data.email,
-
     name: EMAIL_FROM_NAME,
-
     subject: subject,
-
     body: plainBody,
-
     htmlBody: htmlBody
-
   };
 
   if (hasQr) {
@@ -667,22 +806,9 @@ IAP Howrah
     emailOptions.attachments = [attachBlob];
   }
 
-  // ----------------------------------------------------------
-  // Add CC automatically
-  // ----------------------------------------------------------
-
-  if (
-    EMAIL_CC &&
-    EMAIL_CC.toString().trim().length > 0
-  ) {
-
+  if (EMAIL_CC && EMAIL_CC.toString().trim().length > 0) {
     emailOptions.cc = EMAIL_CC;
   }
-
-
-  // ----------------------------------------------------------
-  // Send email
-  // ----------------------------------------------------------
 
   MailApp.sendEmail(emailOptions);
 }

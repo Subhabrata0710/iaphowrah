@@ -58,7 +58,7 @@
   // APPS SCRIPT API URL — Replace with deployed Web App URL
   // ============================================================
   const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbwkchnAhOCEpWvyoOs4FDyyA8t832VBCtuwixgqa4xxNqosvGsGtJyZuZvT1iFZoctq/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbyvEuDe834o4ldjcIzr3UaU4MzMznKvMiEc-ArZ-SuMxJ7fnYpfwprXMbWk2Ec1e9MT/exec',
     RZP_KEY: 'rzp_live_TVAc2I0MUmZ44U',
     ANIMATION_THRESHOLD: 0.15,
     TOAST_DURATION: 4500,
@@ -424,12 +424,33 @@
     const categoryEl = document.getElementById('reg-category');
     const feeBox = document.getElementById('fee-display-box');
     const totalEl = document.getElementById('total-display');
+    const uploadContainer = document.getElementById('upload-container');
+    const uploadLabel = document.getElementById('upload-label');
+    const regDoc = document.getElementById('reg-doc');
+
     if (!categoryEl || !feeBox) return;
 
     const category = categoryEl.value;
     if (!category) {
       feeBox.style.display = 'none';
+      if (uploadContainer) uploadContainer.style.display = 'none';
       return;
+    }
+
+    if (uploadContainer && regDoc && uploadLabel) {
+      if (category === 'PGT') {
+        uploadContainer.style.display = 'block';
+        uploadLabel.textContent = 'Upload Auth Letter from HOD *';
+        regDoc.required = true;
+      } else if (category === 'Senior Citizen') {
+        uploadContainer.style.display = 'block';
+        uploadLabel.textContent = 'Upload ID Proof (Aadhar, PAN, etc.) *';
+        regDoc.required = true;
+      } else {
+        uploadContainer.style.display = 'none';
+        regDoc.required = false;
+        regDoc.value = '';
+      }
     }
 
     const result = getFeeForCategory(category);
@@ -490,6 +511,16 @@
       return showToast('Please enter a valid 10-digit Indian mobile number.', 'error');
     }
 
+    const regDoc = document.getElementById('reg-doc');
+    if (regDoc && regDoc.required && (!regDoc.files || regDoc.files.length === 0)) {
+      return showToast('Please upload the required document.', 'error');
+    }
+    if (regDoc && regDoc.files && regDoc.files.length > 0) {
+      if (regDoc.files[0].size > 2 * 1024 * 1024) {
+        return showToast('File size must be less than 2MB.', 'error');
+      }
+    }
+
     const feeResult = getFeeForCategory(category);
     if (!feeResult) return showToast('Invalid category selected.', 'error');
 
@@ -501,7 +532,7 @@
 
     // Free registration — skip Razorpay
     if (feeResult.isFree || amount === 0) {
-      registerBackendWBP('FREE_' + Date.now(), 0, feeResult);
+      processRegistrationWithDoc('FREE_' + Date.now(), 0, feeResult);
       return;
     }
 
@@ -514,7 +545,7 @@
       description: category + ' — Conference Registration',
       image: 'images/iap-howrah-logo.png',
       handler: function (response) {
-        registerBackendWBP(response.razorpay_payment_id, amount, feeResult);
+        processRegistrationWithDoc(response.razorpay_payment_id, amount, feeResult);
       },
       prefill: { name, email, contact: mobile },
       theme: { color: '#0b2c4d' },
@@ -532,9 +563,35 @@
     rzp.open();
   };
 
-  function registerBackendWBP(paymentId, amount, feeResult) {
+  function processRegistrationWithDoc(paymentId, amount, feeResult) {
     const btn = document.getElementById('reg-submit-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+    const regDoc = document.getElementById('reg-doc');
+
+    if (regDoc && regDoc.files && regDoc.files.length > 0) {
+      const file = regDoc.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const base64Data = e.target.result.split(',')[1];
+        registerBackendWBP(paymentId, amount, feeResult, {
+          data: base64Data,
+          mimeType: file.type,
+          name: file.name
+        });
+      };
+      reader.onerror = function () {
+        showToast('Failed to read document. Please try again.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      registerBackendWBP(paymentId, amount, feeResult, null);
+    }
+  }
+
+  function registerBackendWBP(paymentId, amount, feeResult, docObj) {
+    const btn = document.getElementById('reg-submit-btn');
+    if (btn && btn.textContent !== 'Processing…') { btn.disabled = true; btn.textContent = 'Processing…'; }
 
     const data = {
       action: 'register',
@@ -548,7 +605,10 @@
       amount,
       period: feeResult.period || '',
       paymentId,
-      isFree: feeResult.isFree || false
+      isFree: feeResult.isFree || false,
+      docData: docObj ? docObj.data : null,
+      docMimeType: docObj ? docObj.mimeType : null,
+      docName: docObj ? docObj.name : null
     };
 
     const sendRequest = function (retryCount) {
