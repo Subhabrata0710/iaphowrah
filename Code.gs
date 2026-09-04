@@ -618,7 +618,6 @@ Payment ID      : ${data.paymentId || 'N/A'}
 Regards,
 Organizing Committee
 45th WB PEDICON 2026
-IAP Howrah
 `;
 
   var htmlBody = plainBody.replace(/\n/g, '<br>');
@@ -782,7 +781,6 @@ Venue : The Park Hotel, Kolkata
 Regards,
 Organizing Committee
 45th WB PEDICON 2026
-IAP Howrah
 `;
 
   var htmlBody = plainBody.replace(/\n/g, '<br>');
