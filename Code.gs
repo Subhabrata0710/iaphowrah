@@ -600,7 +600,7 @@ function handleContact(data) {
 // ============================================================
 
 function sendAcknowledgmentEmail(regId, data) {
-  const subject = `Registration Received - 45th WB PEDICON 2026 [${regId}]`;
+  const subject = `Registration Received - 45th WB PEDICON 2026`;
 
   const plainBody = `Dear ${data.name || 'Participant'},
 
@@ -610,7 +610,6 @@ If you receive no confirmation mail, please contact support.
 
 Your Registration Details:
 ─────────────────────────────────
-Registration ID : ${regId}
 Category        : ${data.category || ''}
 Amount Paid     : ₹${data.amount || 0}
 Payment ID      : ${data.paymentId || 'N/A'}
