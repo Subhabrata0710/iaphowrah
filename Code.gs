@@ -27,7 +27,7 @@ const EMAIL_CC = 'mukherjeerohit301@gmail.com';
 const FAILURE_EMAIL = 'mukherjeerohit301@gmail.com';
 
 // Google Drive Folder ID to store generated QR codes
-const UPLOAD_FOLDER_ID = '1BKUq5rWxkEiz5EEfZ_RkQJKzcatPNRzC'; // Using EZECON one as default placeholder, user can modify
+const UPLOAD_FOLDER_ID = '1Jf4Vz_4FBRY6AlZ6gLdlO6nbP6WXY3cg'; // Using EZECON one as default placeholder, user can modify
 
 
 // ============================================================
@@ -230,7 +230,7 @@ function handleRegistration(data) {
     var qrFileId = null;
 
     try {
-      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== 'YOUR_GDRIVE_FOLDER_ID_HERE') {
+      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1Jf4Vz_4FBRY6AlZ6gLdlO6nbP6WXY3cg') {
         var response = UrlFetchApp.fetch(qrApiUrl);
         qrBlob = response.getBlob().getAs(MimeType.PNG).setName('QR_' + regId + '.png');
         var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
@@ -253,7 +253,7 @@ function handleRegistration(data) {
       try {
         var decodedDoc = Utilities.base64Decode(data.docData);
         var docBlob = Utilities.newBlob(decodedDoc, data.docMimeType, data.docName);
-        if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== 'YOUR_GDRIVE_FOLDER_ID_HERE') {
+        if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1Jf4Vz_4FBRY6AlZ6gLdlO6nbP6WXY3cg') {
           var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
           var docFolders = parentFolder.getFoldersByName('Documents');
           var docFolder = docFolders.hasNext() ? docFolders.next() : parentFolder.createFolder('Documents');
