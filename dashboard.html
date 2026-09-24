@@ -1,106 +1,724 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | 45th WB PEDICON 2026</title>
-  <meta name="description" content="View your registration details, QR code, and download your receipt for the 45th WB PEDICON 2026.">
+  <title>Delegate Dashboard | 45th WB PEDICON 2026</title>
+  <meta name="description"
+    content="Your delegate dashboard for the 45th WB PEDICON 2026: registration details, identity upload and abstract submission.">
+  <meta name="robots" content="noindex">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="portal.css">
 </head>
+
 <body>
 
-  <!-- Navigation Placeholder -->
+  <!-- SVG icon sprite (line icons, referenced with <use>) -->
+  <svg class="visually-hidden" aria-hidden="true" focusable="false">
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24">
+      <path
+        d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+    </symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24">
+      <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+      <circle cx="7.5" cy="7.5" r="1.2" />
+    </symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24">
+      <rect x="3" y="6" width="18" height="14" rx="2" />
+      <path d="M3 10h18M16 15h2" />
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6l-8-3z" />
+      <path d="m9 12 2 2 4-4" />
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24">
+      <path d="M12 16V4M7 9l5-5 5 5M4 20h16" />
+    </symbol>
+    <symbol id="i-file" viewBox="0 0 24 24">
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" />
+      <path d="M14 3v5h5M9 13h6M9 17h6" />
+    </symbol>
+    <symbol id="i-image" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="9" cy="10" r="1.6" />
+      <path d="m21 16-5-5-8 8" />
+    </symbol>
+    <symbol id="i-id" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="9" cy="11" r="2" />
+      <path d="M6 16c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4M15 10h3M15 14h3" />
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v5M12 16.5v.01" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 7.5v.01" />
+    </symbol>
+  </svg>
+
+  <!-- Navigation (loaded by script.js) -->
   <div id="nav-placeholder"></div>
 
-  <!-- Page Header -->
   <header class="page-header">
     <div class="container animate-on-scroll">
-      <h1>Participant Dashboard</h1>
+      <h1>Delegate Dashboard</h1>
       <div class="divider"></div>
-      <p>View your registration details and download receipt</p>
+      <p id="welcome-text">Welcome back</p>
     </div>
   </header>
 
-  <main class="section">
+  <main class="portal-main">
     <div class="container">
-      
-      <!-- Lookup Form -->
-      <div class="dashboard-lookup-card animate-on-scroll">
-        <h2 style="margin-bottom: 0.5rem;">Find Registration</h2>
-        <p class="text-muted" style="margin-bottom: 2rem;">Enter your Registration ID (e.g. WBP26-XXXX) and your registered Email or Mobile number.</p>
-        
-        <form onsubmit="event.preventDefault(); lookupRegistration();">
-          <div class="form-group" style="text-align: left;">
-            <label for="lookup-regid">Registration ID *</label>
-            <input type="text" id="lookup-regid" class="form-control" placeholder="WBP26-..." required style="text-transform: uppercase;">
-          </div>
-          <div class="form-group" style="text-align: left; margin-bottom: 2rem;">
-            <label for="lookup-contact">Registered Email or Mobile *</label>
-            <input type="text" id="lookup-contact" class="form-control" placeholder="Email address or 10-digit mobile" required>
-          </div>
-          <button type="submit" id="lookup-btn" class="btn btn-primary btn-lg w-100">Find Registration</button>
-        </form>
+
+      <div id="page-alert" class="inline-alert inline-alert-error" role="alert" aria-live="assertive">
+        <svg class="icon" aria-hidden="true">
+          <use href="#i-alert" />
+        </svg>
+        <span id="page-alert-text"></span>
       </div>
 
-      <!-- Registration Result Display -->
-      <div id="dashboard-result" style="display: none; margin-top: 3rem;" class="animate-on-scroll">
-        <div class="success-card">
-          <div class="success-card-header no-print">
-            <h2 style="color: #fff; margin-bottom: 5px;">Registration Details</h2>
-            <div class="reg-id-display" id="d-reg-id" style="color: #fff; font-size: 1.8rem; margin-top: 10px;">WBP26-XXXX</div>
+      <!-- ===================== PROFILE (from Google Sheet) ===================== -->
+      <section class="profile-panel" aria-labelledby="profile-title">
+        <div class="profile-panel-head">
+          <div>
+            <div class="reg-label" id="profile-title">Registration ID</div>
+            <div class="reg-value" id="p-regid">-</div>
           </div>
-          
-          <div class="success-card-body print-receipt">
-            <div class="print-receipt-header">
-              <h2 style="color: var(--color-primary); margin-bottom: 5px;">45th WB PEDICON 2026</h2>
-              <p style="margin:0; color: var(--color-text-muted);">Organized by IAP Howrah</p>
-              <h3 style="margin-top:15px;">Registration Receipt</h3>
-            </div>
+          <div class="profile-panel-actions">
+            <button type="button" id="logout-btn" class="btn btn-logout">Log out</button>
+          </div>
+        </div>
 
-            <div class="grid-2">
-              <div>
-                <h4 style="margin-bottom: 1rem; color: var(--color-secondary);">Participant Info</h4>
-                <div class="reg-detail-row"><span class="reg-detail-label">Name</span><span class="reg-detail-value" id="d-name">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Category</span><span class="reg-detail-value" id="d-category">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Institution</span><span class="reg-detail-value" id="d-inst">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Designation</span><span class="reg-detail-value" id="d-desig">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Mobile</span><span class="reg-detail-value" id="d-mobile">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Email</span><span class="reg-detail-value" id="d-email">-</span></div>
-              </div>
-              <div>
-                <h4 style="margin-bottom: 1rem; color: var(--color-secondary);">Registration Info</h4>
-                <div class="reg-detail-row"><span class="reg-detail-label">Amount Paid</span><span class="reg-detail-value" id="d-amount" style="color: var(--color-success); font-size: 1.1rem;">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Payment Status</span><span class="reg-detail-value" id="d-status">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Event Dates</span><span class="reg-detail-value" id="d-date">-</span></div>
-                <div class="reg-detail-row"><span class="reg-detail-label">Venue</span><span class="reg-detail-value" id="d-venue">-</span></div>
-              </div>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-user" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Name</div>
+              <div class="p-value is-loading" id="p-name">Loading...</div>
             </div>
-
-            <div class="text-center no-print" style="margin-top: 2rem;" id="qr-container">
-              <!-- QR Code injected here -->
+          </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-phone" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Phone Number</div>
+              <div class="p-value is-loading" id="p-phone">Loading...</div>
             </div>
-
-            <div class="text-center no-print" style="margin-top: 2rem;">
-              <button class="btn btn-teal" onclick="printRegistrationReceipt()">
-                🖨️ Print Receipt
-              </button>
+          </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-mail" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Email ID</div>
+              <div class="p-value is-loading" id="p-email">Loading...</div>
+            </div>
+          </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-tag" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Category</div>
+              <div class="p-value is-loading" id="p-category">Loading...</div>
+            </div>
+          </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-wallet" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Amount Paid</div>
+              <div class="p-value is-loading" id="p-amount">Loading...</div>
+            </div>
+          </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-shield" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">Payment Status</div>
+              <div class="p-value is-loading" id="p-status">Loading...</div>
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- ===================== PROGRESS ===================== -->
+      <ol class="steps" aria-label="Submission progress">
+        <li class="step is-current" id="step-1">
+          <span class="step-num"><span class="num-text">1</span><svg class="icon done-icon" aria-hidden="true">
+              <use href="#i-check" />
+            </svg></span>
+          Upload your ID or photo
+        </li>
+        <li class="step" id="step-2">
+          <span class="step-num"><span class="num-text">2</span><svg class="icon done-icon" aria-hidden="true">
+              <use href="#i-check" />
+            </svg></span>
+          Confirm the declaration
+        </li>
+        <li class="step" id="step-3">
+          <span class="step-num"><span class="num-text">3</span><svg class="icon done-icon" aria-hidden="true">
+              <use href="#i-check" />
+            </svg></span>
+          Submit your abstract
+        </li>
+      </ol>
+
+      <!-- ===================== UPLOADS ===================== -->
+      <div class="upload-grid">
+
+        <!-- LEFT: ID / photo (first upload is mandatory, later uploads are optional extras) -->
+        <section class="upload-card" id="photo-card" aria-labelledby="photo-title">
+          <div class="upload-card-head">
+            <span class="c-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-id" />
+              </svg></span>
+            <div>
+              <h3 id="photo-title">Upload your ID or photo</h3>
+              <p id="photo-sub">Required before you can submit an abstract.</p>
+            </div>
+            <span class="badge badge-gold" id="photo-badge">Required</span>
+          </div>
+
+          <div class="verified-strip">
+            <svg class="icon" aria-hidden="true">
+              <use href="#i-check" />
+            </svg>
+            <span>Identity received. You can add more images here at any time.</span>
+          </div>
+
+          <fieldset>
+            <legend class="visually-hidden">Upload an ID or photograph</legend>
+
+            <input type="file" id="photo-input" class="visually-hidden" accept="image/jpeg,image/png,image/webp">
+            <label class="dropzone" id="photo-drop" for="photo-input">
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-image" />
+              </svg>
+              <span><strong>Click to choose</strong> or drag and drop</span>
+              <small id="photo-drop-hint">ID card or a clear picture of yourself. JPG, PNG or WebP, up to 5 MB.</small>
+            </label>
+            <input type="file" id="photo-camera" class="visually-hidden" accept="image/*" capture="user">
+
+            <div class="file-chip" id="photo-chip">
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-image" />
+              </svg>
+              <span class="name" id="photo-chip-name"></span>
+              <span class="size" id="photo-chip-size"></span>
+              <button type="button" id="photo-chip-clear">Remove</button>
+            </div>
+
+            <div class="upload-actions">
+              <button type="button" id="photo-camera-btn" class="btn btn-secondary" hidden>Take a photo</button>
+              <button type="button" id="photo-submit" class="btn btn-primary" disabled>Upload</button>
+            </div>
+            <p class="upload-status" id="photo-status" role="status" aria-live="polite"></p>
+          </fieldset>
+        </section>
+
+        <!-- RIGHT: abstract (locked until the ID / photo is uploaded) -->
+        <section class="upload-card is-locked" id="abstract-card" aria-labelledby="abstract-title">
+          <div class="upload-card-head">
+            <span class="c-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-file" />
+              </svg></span>
+            <div>
+              <h3 id="abstract-title">Abstract submission</h3>
+              <p>PowerPoint (PPT, PPTX) or Word (DOC, DOCX), up to 10 MB.</p>
+            </div>
+            <span class="badge badge-primary" id="abstract-badge">Locked</span>
+          </div>
+
+          <div class="lock-notice">
+            <svg class="icon" aria-hidden="true">
+              <use href="#i-lock" />
+            </svg>
+            <span>Upload your ID or photo first. Abstract submission opens right after that.</span>
+          </div>
+
+          <fieldset id="abstract-fieldset" disabled>
+            <legend class="visually-hidden">Submit an abstract</legend>
+
+            <input type="file" id="abstract-input" class="visually-hidden"
+              accept=".ppt,.pptx,.doc,.docx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+            <label class="dropzone" id="abstract-drop" for="abstract-input">
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-upload" />
+              </svg>
+              <span><strong>Click to choose</strong> or drag and drop</span>
+              <small>.ppt, .pptx, .doc or .docx</small>
+            </label>
+
+            <div class="file-chip" id="abstract-chip">
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-file" />
+              </svg>
+              <span class="name" id="abstract-chip-name"></span>
+              <span class="size" id="abstract-chip-size"></span>
+              <button type="button" id="abstract-chip-clear">Remove</button>
+            </div>
+
+            <!-- Declaration text: edit the wording here if the committee wants something different -->
+            <label class="declaration" for="declaration-check">
+              <input type="checkbox" id="declaration-check">
+              <span>I confirm that the information provided by me is correct and complete, that the ID or photograph I
+                uploaded belongs to me, and that the abstract I am submitting is my own work. I understand that the
+                organising committee may reject or withdraw my submission if any information is found to be
+                incorrect.</span>
+            </label>
+
+            <div class="upload-actions">
+              <button type="button" id="abstract-submit" class="btn btn-gold" disabled>Submit abstract</button>
+            </div>
+            <p class="upload-status" id="abstract-status" role="status" aria-live="polite"></p>
+          </fieldset>
+        </section>
       </div>
+
+      <!-- ===================== SUBMISSIONS ===================== -->
+      <section class="submissions" aria-labelledby="subs-title">
+        <h3 id="subs-title">Your submissions</h3>
+        <p>Everything you have uploaded so far, newest first.</p>
+        <ul class="sub-list" id="sub-list">
+          <li class="sub-empty">Nothing uploaded yet.</li>
+        </ul>
+      </section>
 
     </div>
   </main>
 
-  <!-- Footer Placeholder -->
   <div id="footer-placeholder"></div>
 
-  <!-- Loader -->
   <div class="loader-overlay">
     <div class="loader-spinner"></div>
     <div class="loader-text">Loading</div>
   </div>
 
+  <div class="portal-busy" id="busy" role="alert" aria-live="assertive">
+    <div class="loader-spinner"></div>
+    <p id="busy-text">Uploading, please wait...</p>
+  </div>
+
   <script src="script.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      // ---------------- Configuration ----------------
+      var API_URL = window.WBP_API_CONFIG && window.WBP_API_CONFIG.API_URL; // set in script.js
+      var SESSION_KEY = 'wbpPortalSession';
+      var SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+
+      var LIMITS = {
+        image: { exts: ['jpg', 'jpeg', 'png', 'webp'], maxBytes: 5 * 1024 * 1024, label: 'JPG, PNG or WebP' },
+        abstract: { exts: ['ppt', 'pptx', 'doc', 'docx'], maxBytes: 10 * 1024 * 1024, label: 'PPT, PPTX, DOC or DOCX' }
+      };
+
+      // ---------------- State ----------------
+      var session = readSession();
+      var profile = null;
+      var pending = { image: null, abstract: null };
+
+      // ---------------- Helpers ----------------
+      function $(id) { return document.getElementById(id); }
+
+      function readSession() {
+        try {
+          var s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+          if (s && s.regId && s.phone && (Date.now() - s.at) < SESSION_TTL_MS) return s;
+        } catch (e) { /* fall through */ }
+        return null;
+      }
+      function goToLogin() {
+        localStorage.removeItem(SESSION_KEY);
+        window.location.replace('login.html');
+      }
+
+      function api(payload) {
+        return fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          });
+      }
+
+      function showPageAlert(msg) {
+        $('page-alert-text').textContent = msg;
+        $('page-alert').classList.add('show');
+      }
+      function setStatus(id, msg, kind) {
+        var el = $(id);
+        el.textContent = msg || '';
+        el.className = 'upload-status' + (kind ? ' ' + kind : '');
+      }
+      function setBusy(on, text) {
+        $('busy').classList.toggle('show', !!on);
+        if (text) $('busy-text').textContent = text;
+      }
+
+      function ext(name) { var m = /\.([a-z0-9]+)$/i.exec(name || ''); return m ? m[1].toLowerCase() : ''; }
+      function niceSize(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+      function niceDate(iso) {
+        var d = new Date(iso);
+        if (isNaN(d)) return '';
+        return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+      function formatPhone(p) {
+        var d = String(p || '').replace(/\D/g, '').slice(-10);
+        return d.length === 10 ? '+91 ' + d.slice(0, 5) + ' ' + d.slice(5) : (p || '-');
+      }
+      function formatAmount(p) {
+        if (p.isFree) return 'Free';
+        var n = Number(p.amount);
+        return n > 0 ? '\u20B9' + n.toLocaleString('en-IN') : 'Not applicable';
+      }
+
+      function readAsBase64(blob) {
+        return new Promise(function (resolve, reject) {
+          var r = new FileReader();
+          r.onload = function () { resolve(String(r.result).split(',')[1]); };
+          r.onerror = function () { reject(new Error('read')); };
+          r.readAsDataURL(blob);
+        });
+      }
+
+      // Shrinks big phone photos so uploads are quick. Falls back to the original file.
+      function prepareImage(file) {
+        return new Promise(function (resolve) {
+          var keep = { blob: file, name: file.name, type: file.type };
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+            var c = document.createElement('canvas');
+            c.width = Math.round(img.width * scale);
+            c.height = Math.round(img.height * scale);
+            var g = c.getContext('2d');
+            g.fillStyle = '#fff';
+            g.fillRect(0, 0, c.width, c.height);
+            g.drawImage(img, 0, 0, c.width, c.height);
+            c.toBlob(function (b) {
+              URL.revokeObjectURL(url);
+              if (b && b.size < file.size) {
+                resolve({ blob: b, name: file.name.replace(/\.[^.]+$/, '') + '.jpg', type: 'image/jpeg' });
+              } else { resolve(keep); }
+            }, 'image/jpeg', 0.85);
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(keep); };
+          img.src = url;
+        });
+      }
+
+      // ---------------- Rendering ----------------
+      function renderProfile() {
+        var map = {
+          'p-name': profile.name || '-',
+          'p-phone': formatPhone(profile.mobile),
+          'p-email': profile.email || '-',
+          'p-category': profile.category || '-',
+          'p-amount': formatAmount(profile),
+          'p-status': profile.paymentStatus || '-'
+        };
+        Object.keys(map).forEach(function (id) {
+          var el = $(id);
+          el.textContent = map[id];
+          el.classList.remove('is-loading');
+        });
+        $('p-regid').textContent = profile.regId;
+        $('welcome-text').textContent = 'Welcome, ' + (profile.name || profile.regId);
+      }
+
+      function renderGate() {
+        var verified = !!profile.hasIdentity;
+        var abstractDone = !!profile.abstractSubmitted;
+
+        // Photo card wording changes after the first (mandatory) upload
+        var photoCard = $('photo-card');
+        photoCard.classList.toggle('is-verified', verified);
+        $('photo-title').textContent = verified ? 'Your photo and images' : 'Upload your ID or photo';
+        $('photo-sub').textContent = verified ? 'Add any other image whenever you need to.' : 'Required before you can submit an abstract.';
+        $('photo-drop-hint').textContent = verified
+          ? 'JPG, PNG or WebP, up to 5 MB.'
+          : 'ID card or a clear picture of yourself. JPG, PNG or WebP, up to 5 MB.';
+        var pb = $('photo-badge');
+        pb.textContent = verified ? 'Verified' : 'Required';
+        pb.className = 'badge ' + (verified ? 'badge-success' : 'badge-gold');
+        $('photo-submit').textContent = verified ? 'Upload image' : 'Upload ID or photo';
+
+        // Abstract card unlocks only when the ID / photo is on file
+        var aCard = $('abstract-card');
+        aCard.classList.toggle('is-locked', !verified);
+        $('abstract-fieldset').disabled = !verified;
+        var ab = $('abstract-badge');
+        ab.textContent = abstractDone ? 'Submitted' : (verified ? 'Open' : 'Locked');
+        ab.className = 'badge ' + (abstractDone ? 'badge-success' : (verified ? 'badge-teal' : 'badge-primary'));
+        $('abstract-submit').textContent = abstractDone ? 'Replace abstract' : 'Submit abstract';
+
+        renderSteps();
+        updateButtons();
+      }
+
+      function renderSteps() {
+        var verified = !!profile.hasIdentity;
+        var abstractDone = !!profile.abstractSubmitted;
+        var declared = $('declaration-check').checked || abstractDone;
+
+        function set(id, state) {
+          var el = $(id);
+          el.classList.toggle('is-done', state === 'done');
+          el.classList.toggle('is-current', state === 'current');
+        }
+        set('step-1', verified ? 'done' : 'current');
+        set('step-2', !verified ? '' : (declared ? 'done' : 'current'));
+        set('step-3', abstractDone ? 'done' : (verified && declared ? 'current' : ''));
+      }
+
+      function renderSubmissions() {
+        var list = $('sub-list');
+        list.textContent = '';
+        var items = (profile.uploads || []).slice().sort(function (a, b) { return new Date(b.uploadedAt) - new Date(a.uploadedAt); });
+        if (!items.length) {
+          var li = document.createElement('li');
+          li.className = 'sub-empty';
+          li.textContent = 'Nothing uploaded yet.';
+          list.appendChild(li);
+          return;
+        }
+        var labels = { identity: 'ID or photo (verification)', image: 'Additional image', abstract: 'Abstract' };
+        items.forEach(function (u) {
+          var li = document.createElement('li');
+          li.className = 'sub-item';
+
+          var icon = document.createElement('span');
+          icon.className = 's-icon';
+          icon.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#' + (u.type === 'abstract' ? 'i-file' : 'i-image') + '"/></svg>';
+
+          var body = document.createElement('div');
+          body.className = 's-body';
+          var name = document.createElement('div');
+          name.className = 's-name';
+          name.textContent = u.fileName;
+          var meta = document.createElement('div');
+          meta.className = 's-meta';
+          meta.textContent = (labels[u.type] || u.type) + '  |  ' + niceDate(u.uploadedAt);
+          body.appendChild(name);
+          body.appendChild(meta);
+
+          var badge = document.createElement('span');
+          badge.className = 'badge badge-success';
+          badge.textContent = 'Received';
+
+          li.appendChild(icon);
+          li.appendChild(body);
+          li.appendChild(badge);
+          list.appendChild(li);
+        });
+      }
+
+      function applyProfile(p) {
+        profile = p;
+        renderProfile();
+        renderGate();
+        renderSubmissions();
+      }
+
+      // ---------------- File selection ----------------
+      function setPending(kind, file) {
+        var rule = LIMITS[kind];
+        var statusId = kind === 'image' ? 'photo-status' : 'abstract-status';
+        setStatus(statusId, '');
+
+        if (file) {
+          if (rule.exts.indexOf(ext(file.name)) === -1) {
+            setStatus(statusId, 'Unsupported file type. Please choose ' + rule.label + '.', 'err');
+            file = null;
+          } else if (kind === 'abstract' && file.size > rule.maxBytes) {
+            setStatus(statusId, 'This file is larger than 10 MB. Please compress it and try again.', 'err');
+            file = null;
+          } else if (kind === 'image' && file.size > 15 * 1024 * 1024) {
+            setStatus(statusId, 'This image is too large. Please choose one under 15 MB.', 'err');
+            file = null;
+          }
+        }
+        pending[kind] = file || null;
+
+        var p = kind === 'image' ? 'photo' : 'abstract';
+        $(p + '-chip').classList.toggle('show', !!file);
+        $(p + '-drop').classList.toggle('has-file', !!file);
+        if (file) {
+          $(p + '-chip-name').textContent = file.name;
+          $(p + '-chip-size').textContent = niceSize(file.size);
+        } else {
+          $(p + '-input').value = '';
+          if (kind === 'image') $('photo-camera').value = '';
+        }
+        updateButtons();
+      }
+
+      function updateButtons() {
+        if (!profile) return;
+        $('photo-submit').disabled = !pending.image;
+        $('abstract-submit').disabled = !(profile.hasIdentity && pending.abstract && $('declaration-check').checked);
+        renderSteps();
+      }
+
+      function wireDropzone(kind, dropId, inputId) {
+        var drop = $(dropId), input = $(inputId);
+        input.addEventListener('change', function () { setPending(kind, this.files[0]); });
+        ['dragenter', 'dragover'].forEach(function (t) {
+          drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('is-dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(function (t) {
+          drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('is-dragover'); });
+        });
+        drop.addEventListener('drop', function (e) {
+          if (kind === 'abstract' && !(profile && profile.hasIdentity)) return; // locked
+          var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+          if (f) setPending(kind, f);
+        });
+      }
+
+      // ---------------- Uploading ----------------
+      function send(payload, busyText) {
+        setBusy(true, busyText);
+        return api(payload).then(function (data) {
+          setBusy(false);
+          if (data && data.code === 'AUTH_FAILED') { goToLogin(); return null; }
+          return data;
+        }).catch(function () {
+          setBusy(false);
+          return { success: false, message: 'We could not reach the server. Please check your connection and try again.' };
+        });
+      }
+
+      function uploadImage() {
+        var file = pending.image;
+        if (!file || !profile) return;
+        setStatus('photo-status', '');
+        var wasVerified = !!profile.hasIdentity;
+
+        prepareImage(file).then(function (prepared) {
+          if (prepared.blob.size > LIMITS.image.maxBytes) {
+            setStatus('photo-status', 'This image is still larger than 5 MB after compression. Please choose a smaller one.', 'err');
+            return null;
+          }
+          return readAsBase64(prepared.blob).then(function (b64) {
+            return send({
+              action: 'upload',
+              uploadType: 'image',
+              regId: session.regId,
+              phone: session.phone,
+              filename: prepared.name,
+              mimeType: prepared.type,
+              base64Data: b64
+            }, 'Uploading your image, please wait...');
+          });
+        }).then(function (data) {
+          if (!data) return;
+          if (data.success) {
+            setPending('image', null);
+            applyProfile(data.profile);
+            setStatus('photo-status',
+              wasVerified ? 'Image uploaded successfully.' : 'Identity received. Abstract submission is now open.', 'ok');
+            if (!wasVerified) $('abstract-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            setStatus('photo-status', data.message || 'Upload failed. Please try again.', 'err');
+          }
+        }).catch(function () {
+          setStatus('photo-status', 'Could not read this file. Please try another one.', 'err');
+        });
+      }
+
+      function uploadAbstract() {
+        var file = pending.abstract;
+        if (!file || !profile || !profile.hasIdentity) return;
+        if (!$('declaration-check').checked) {
+          return setStatus('abstract-status', 'Please tick the declaration before submitting.', 'err');
+        }
+        setStatus('abstract-status', '');
+
+        readAsBase64(file).then(function (b64) {
+          return send({
+            action: 'upload',
+            uploadType: 'abstract',
+            regId: session.regId,
+            phone: session.phone,
+            filename: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            base64Data: b64,
+            declaration: true
+          }, 'Submitting your abstract, please wait...');
+        }).then(function (data) {
+          if (!data) return;
+          if (data.success) {
+            setPending('abstract', null);
+            $('declaration-check').checked = false;
+            applyProfile(data.profile);
+            setStatus('abstract-status', 'Abstract submitted successfully.', 'ok');
+          } else {
+            setStatus('abstract-status', data.message || 'Submission failed. Please try again.', 'err');
+          }
+        }).catch(function () {
+          setStatus('abstract-status', 'Could not read this file. Please try another one.', 'err');
+        });
+      }
+
+      // ---------------- Start ----------------
+      if (!session) { goToLogin(); return; }
+
+      $('logout-btn').addEventListener('click', goToLogin);
+      wireDropzone('image', 'photo-drop', 'photo-input');
+      wireDropzone('abstract', 'abstract-drop', 'abstract-input');
+      $('photo-camera').addEventListener('change', function () { setPending('image', this.files[0]); });
+      $('photo-camera-btn').addEventListener('click', function () { $('photo-camera').click(); });
+      if (navigator.maxTouchPoints > 0) $('photo-camera-btn').hidden = false; // camera shortcut on phones and tablets only
+      $('photo-chip-clear').addEventListener('click', function () { setPending('image', null); });
+      $('abstract-chip-clear').addEventListener('click', function () { setPending('abstract', null); });
+      $('declaration-check').addEventListener('change', updateButtons);
+      $('photo-submit').addEventListener('click', uploadImage);
+      $('abstract-submit').addEventListener('click', uploadAbstract);
+
+      if (!API_URL) { showPageAlert('The portal is not configured yet. Please contact the organisers.'); return; }
+
+      api({ action: 'profile', regId: session.regId, phone: session.phone })
+        .then(function (data) {
+          if (data && data.success && data.profile) {
+            applyProfile(data.profile);
+          } else if (data && data.code === 'AUTH_FAILED') {
+            goToLogin();
+          } else {
+            showPageAlert((data && data.message) || 'We could not load your details. Please refresh the page.');
+          }
+        })
+        .catch(function () {
+          showPageAlert('We could not reach the server. Please check your internet connection and refresh the page.');
+        });
+    })();
+  </script>
 </body>
+
 </html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delegate Login | 45th WB PEDICON 2026</title>
+    <meta name="description"
+        content="Log in with your Registration ID and registered phone number to access your 45th WB PEDICON 2026 delegate dashboard.">
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="portal.css">
+</head>
+
+<body>
+
+    <!-- Navigation (loaded by script.js) -->
+    <div id="nav-placeholder"></div>
+
+    <header class="page-header">
+        <div class="container animate-on-scroll">
+            <h1>Abstract Submittion</h1>
+            <div class="divider"></div>
+            <p>Access your dashboard for the 45th WB PEDICON 2026</p>
+        </div>
+    </header>
+
+    <main class="portal-main">
+        <div class="container">
+            <div class="login-shell animate-on-scroll">
+                <div class="login-card">
+
+                    <div class="login-card-head">
+                        <div class="login-badge" aria-hidden="true">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="4" y="11" width="16" height="10" rx="2" />
+                                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                            </svg>
+                        </div>
+                        <h2>Welcome back</h2>
+                        <p>Enter the details you used while registering.</p>
+                    </div>
+
+                    <div id="login-alert" class="inline-alert inline-alert-error" role="alert" aria-live="assertive">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 8v5M12 16.5v.01" />
+                        </svg>
+                        <span id="login-alert-text"></span>
+                    </div>
+
+                    <form id="login-form" novalidate autocomplete="on">
+                        <div class="form-group">
+                            <label for="login-reg-id">Registration ID</label>
+                            <input id="login-reg-id" name="regId" type="text" class="form-control"
+                                placeholder="e.g. WBP26-0001" autocomplete="off" autocapitalize="characters"
+                                spellcheck="false" required>
+                            <span class="field-hint">Sent to your email after registration.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-phone">Registered Phone Number</label>
+                            <input id="login-phone" name="phone" type="tel" class="form-control"
+                                placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel" required>
+                        </div>
+
+                        <button type="submit" id="login-btn" class="btn btn-primary btn-lg w-100">Log in</button>
+                    </form>
+
+                    <div class="login-help">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+                        </svg>
+                        <div>
+                            <strong>Do not know your Registration ID?</strong><br>
+                            Please call <a class="tel-link" href="tel:+919830367423">9830367423</a>.
+                        </div>
+                    </div>
+
+                    <p class="login-foot">
+                        Have not registered yet? <a href="register.html">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <div class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Loading</div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            // API URL comes from CONFIG in script.js, so there is one place to update it.
+            var API_URL = window.WBP_API_CONFIG && window.WBP_API_CONFIG.API_URL;
+
+            var SESSION_KEY = 'wbpPortalSession';
+            var SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+            var form = document.getElementById('login-form');
+            var regInput = document.getElementById('login-reg-id');
+            var phoneInput = document.getElementById('login-phone');
+            var btn = document.getElementById('login-btn');
+            var alertBox = document.getElementById('login-alert');
+            var alertTxt = document.getElementById('login-alert-text');
+
+            // Already logged in? Go straight to the dashboard.
+            try {
+                var existing = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+                if (existing && existing.regId && existing.phone && (Date.now() - existing.at) < SESSION_TTL_MS) {
+                    window.location.replace('dashboard.html');
+                    return;
+                }
+            } catch (e) { localStorage.removeItem(SESSION_KEY); }
+
+            function showError(msg) {
+                alertTxt.textContent = msg;
+                alertBox.classList.add('show');
+            }
+            function clearError() {
+                alertBox.classList.remove('show');
+                regInput.classList.remove('is-invalid');
+                phoneInput.classList.remove('is-invalid');
+            }
+            function setBusy(busy) {
+                btn.disabled = busy;
+                btn.textContent = busy ? 'Checking...' : 'Log in';
+            }
+
+            form.addEventListener('submit', function (ev) {
+                ev.preventDefault();
+                clearError();
+
+                var regId = regInput.value.trim().toUpperCase();
+                var phone = phoneInput.value.replace(/\D/g, '').slice(-10); // ignores spaces, +91, dashes
+
+                if (!/^WBP26-\d{3,}$/.test(regId)) {
+                    regInput.classList.add('is-invalid');
+                    regInput.focus();
+                    return showError('Please enter a valid Registration ID, for example WBP26-0001.');
+                }
+                if (!/^[6-9]\d{9}$/.test(phone)) {
+                    phoneInput.classList.add('is-invalid');
+                    phoneInput.focus();
+                    return showError('Please enter your 10-digit registered mobile number.');
+                }
+                if (!API_URL) {
+                    return showError('The portal is not configured yet. Please contact the organisers.');
+                }
+
+                setBusy(true);
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', regId: regId, phone: phone })
+                })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        if (data && data.success) {
+                            localStorage.setItem(SESSION_KEY, JSON.stringify({
+                                regId: data.regId,
+                                phone: phone,
+                                name: data.name || '',
+                                at: Date.now()
+                            }));
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            setBusy(false);
+                            showError((data && data.message) || 'Login failed. Please check your details.');
+                        }
+                    })
+                    .catch(function () {
+                        setBusy(false);
+                        showError('We could not reach the server. Please check your internet connection and try again.');
+                    });
+            });
+        })();
+    </script>
+</body>
+
+</html>
