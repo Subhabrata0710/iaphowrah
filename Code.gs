@@ -282,7 +282,7 @@ function handleRegistration(data) {
     var qrFileId = null;
 
     try {
-      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1emZUzrwtUOLm016PsnWF-0VFdnlheWFG') {
+      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1BKUq5rWxkEiz5EEfZ_RkQJKzcatPNRzC') {
         var response = UrlFetchApp.fetch(qrApiUrl);
         qrBlob = response.getBlob().getAs(MimeType.PNG).setName('QR_' + regId + '.png');
         var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
