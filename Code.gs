@@ -1,3 +1,4 @@
+// File: Code.gs
 /**
  * ============================================================
  * Google Apps Script Backend for 45th WB PEDICON 2026
@@ -26,8 +27,11 @@ const EMAIL_CC = 'mukherjeerohit301@gmail.com';
 // Email address that will receive backend failure alerts
 const FAILURE_EMAIL = 'mukherjeerohit301@gmail.com';
 
-// Google Drive Folder ID to store generated QR codes
-const UPLOAD_FOLDER_ID = '1emZUzrwtUOLm016PsnWF-0VFdnlheWFG'; // Using EZECON one as default placeholder, user can modify
+// Google Drive Folder ID to store generated QR codes and uploaded documents.
+// >>> CONFIRM THIS IS THE CORRECT, CURRENTLY-VALID FOLDER YOU OWN/HAVE EDIT ACCESS TO. <<<
+// This value has flip-flopped between two different IDs across recent edits —
+// pick the real one and leave it alone.
+const UPLOAD_FOLDER_ID = '1BKUq5rWxkEiz5EEfZ_RkQJKzcatPNRzC';
 
 // ------------------------------------------------------------
 // DELEGATE PORTAL (login + dashboard uploads)
@@ -273,45 +277,68 @@ function handleRegistration(data) {
 
     // --------------------------------------------------------
     // 3.5 Generate QR Code and Save to Google Drive
+    // FIX: the URL is now captured immediately after createFile()
+    // succeeds. setSharing() runs in its OWN try/catch so a sharing
+    // failure (e.g. domain / Shared-Drive policy) can never wipe out
+    // a link that Drive already has. Worst case: the file is private
+    // to the folder owner, but the link is still saved correctly.
     // --------------------------------------------------------
     var qrText = '45th WB PEDICON 2026\nReg ID: ' + regId + '\nName: ' + (data.name || '') +
       '\nCategory: ' + (data.category || '') + '\nAmount: Rs.' + (data.amount || 0);
     var qrApiUrl = 'https://quickchart.io/qr?text=' + encodeURIComponent(qrText) + '&margin=2&size=300';
     var savedQrUrl = qrApiUrl;
-    var qrBlob = null;
     var qrFileId = null;
 
     try {
-      if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1emZUzrwtUOLm016PsnWF-0VFdnlheWFG') {
-        var response = UrlFetchApp.fetch(qrApiUrl);
-        qrBlob = response.getBlob().getAs(MimeType.PNG).setName('QR_' + regId + '.png');
-        var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
-        var qrFolders = parentFolder.getFoldersByName('QR');
-        var qrFolder = qrFolders.hasNext() ? qrFolders.next() : parentFolder.createFolder('QR');
+      if (UPLOAD_FOLDER_ID) {
+        var qrResponse = UrlFetchApp.fetch(qrApiUrl);
+        var qrBlob = qrResponse.getBlob().getAs(MimeType.PNG).setName('QR_' + regId + '.png');
+        var qrParentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+        var qrFolders = qrParentFolder.getFoldersByName('QR');
+        var qrFolder = qrFolders.hasNext() ? qrFolders.next() : qrParentFolder.createFolder('QR');
         var qrFile = qrFolder.createFile(qrBlob);
-        qrFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+        // Capture the real link and ID FIRST, before anything that can throw.
         savedQrUrl = qrFile.getUrl();
         qrFileId = qrFile.getId();
+
+        // Sharing is best-effort — if it fails, we still keep the URL above.
+        try {
+          qrFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        } catch (qrShareErr) {
+          console.error('QR sharing failed (URL kept anyway): ' + qrShareErr.toString());
+        }
       }
     } catch (qrErr) {
       console.error('QR save failed: ' + qrErr.toString());
+      // savedQrUrl stays as the quickchart.io fallback URL set above.
     }
 
     // --------------------------------------------------------
     // 3.6 Process Document Upload
+    // FIX: same pattern — capture the URL before setSharing(),
+    // and isolate setSharing() so it can't overwrite savedDocUrl.
     // --------------------------------------------------------
     var savedDocUrl = '';
     if (data.docData) {
       try {
         var decodedDoc = Utilities.base64Decode(data.docData);
         var docBlob = Utilities.newBlob(decodedDoc, data.docMimeType, data.docName);
-        if (UPLOAD_FOLDER_ID && UPLOAD_FOLDER_ID !== '1Jf4Vz_4FBRY6AlZ6gLdlO6nbP6WXY3cg') {
-          var parentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
-          var docFolders = parentFolder.getFoldersByName('Documents');
-          var docFolder = docFolders.hasNext() ? docFolders.next() : parentFolder.createFolder('Documents');
+        if (UPLOAD_FOLDER_ID) {
+          var docParentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
+          var docFolders = docParentFolder.getFoldersByName('Documents');
+          var docFolder = docFolders.hasNext() ? docFolders.next() : docParentFolder.createFolder('Documents');
           var docFile = docFolder.createFile(docBlob);
-          docFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+          // Capture the real link FIRST, before anything that can throw.
           savedDocUrl = docFile.getUrl();
+
+          // Sharing is best-effort — if it fails, we still keep the URL above.
+          try {
+            docFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+          } catch (docShareErr) {
+            console.error('Document sharing failed (URL kept anyway): ' + docShareErr.toString());
+          }
         }
       } catch (docErr) {
         console.error('Document save failed: ' + docErr.toString());
@@ -738,12 +765,21 @@ function processUpload(data) {
   const storedName = current.regId + '_' + type + '_' + stamp + '_' + safeFileName(fileName);
 
   let file;
+  let url;
   try {
     const bytes = Utilities.base64Decode(base64);
     const blob = Utilities.newBlob(bytes, data.mimeType || 'application/octet-stream', storedName);
     file = getUploadSubfolder(folderName).createFile(blob);
+
+    // Capture the URL FIRST, before any sharing attempt.
+    url = file.getUrl();
+
     if (SHARE_UPLOADS_BY_LINK) {
-      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      try {
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      } catch (shareErr) {
+        console.error('Portal upload sharing failed (URL kept anyway): ' + shareErr.toString());
+      }
     }
   } catch (err) {
     console.error('Upload save failed:', err);
@@ -753,7 +789,6 @@ function processUpload(data) {
 
   // ---- Record in the sheet ----
   const now = new Date();
-  const url = file.getUrl();
 
   if (type === 'identity') {
     sheet.getRange(rowNumber, COL_IDENTITY_URL).setValue(url);
@@ -832,38 +867,6 @@ function handleContact(data) {
       data.message || ''
 
     ]);
-
-
-    // --------------------------------------------------------
-    // Optional admin notification
-    //
-    // Uncomment this block if you want contact form
-    // submissions emailed to the organizing committee.
-    // --------------------------------------------------------
-
-    /*
-    MailApp.sendEmail({
-
-      to: FAILURE_EMAIL,
-
-      cc: EMAIL_CC,
-
-      name: EMAIL_FROM_NAME,
-
-      subject:
-        'New Contact Inquiry: ' +
-        (data.subject || 'General Inquiry'),
-
-      body:
-        'Name: ' + data.name +
-        '\nEmail: ' + data.email +
-        '\nMobile: ' + (data.mobile || 'N/A') +
-        '\nSubject: ' + (data.subject || 'N/A') +
-        '\n\nMessage:\n' +
-        (data.message || '')
-
-    });
-    */
 
 
     return createJsonResponse({
@@ -961,8 +964,6 @@ function onSpreadsheetEdit(e) {
   const row = e.range.getRow();
   if (row <= 1) return;
 
-  // Clear the cell so it's ready for another action if needed, or leave it. We'll leave it.
-  
   // Set status to pending
   sheet.getRange(row, 19).setValue('Pending (1 min delay)...');
 
