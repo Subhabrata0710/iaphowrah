@@ -58,7 +58,7 @@
   // APPS SCRIPT API URL — Replace with deployed Web App URL
   // ============================================================
   const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbyJCSb7soz-prGcXrJACylAzhVr_BHf8X52ZRsICO05VtWrDb_F4G1hCka0RwnCoeeh/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbyPkrymJRFc042yEJw4YtQD4TullkYN1A6r213beZgqdoQ_tXPCiIvWf2UXeXT-J37Y/exec',
     RZP_KEY: 'rzp_live_TVAc2I0MUmZ44U',
     ANIMATION_THRESHOLD: 0.15,
     TOAST_DURATION: 4500,
@@ -563,9 +563,61 @@
     rzp.open();
   };
 
+  // ============================================================
+  // "PLEASE WAIT" OVERLAY (shown while the registration is being saved)
+  // Self-contained: creates its own markup + styles, no CSS file needed.
+  // ============================================================
+  function showWaitOverlay(message) {
+    let overlay = document.getElementById('wait-overlay');
+    if (!overlay) {
+      const style = document.createElement('style');
+      style.textContent =
+        '#wait-overlay{position:fixed;inset:0;z-index:99999;background:rgba(11,44,77,.88);' +
+        'display:flex;align-items:center;justify-content:center;padding:20px;}' +
+        '#wait-overlay .wait-box{background:#fff;border-radius:14px;padding:32px 28px;max-width:420px;' +
+        'width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.35);font-family:inherit;}' +
+        '#wait-overlay .wait-spinner{width:54px;height:54px;margin:0 auto 18px;border:5px solid #e3e8ee;' +
+        'border-top-color:#0b2c4d;border-radius:50%;animation:waitspin .9s linear infinite;}' +
+        '#wait-overlay h3{margin:0 0 8px;color:#0b2c4d;font-size:1.25rem;}' +
+        '#wait-overlay p{margin:0;color:#555;font-size:.95rem;line-height:1.5;}' +
+        '#wait-overlay .wait-warn{margin-top:14px;color:#b02a37;font-weight:600;font-size:.9rem;}' +
+        '@keyframes waitspin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(style);
+
+      overlay = document.createElement('div');
+      overlay.id = 'wait-overlay';
+      overlay.setAttribute('role', 'alertdialog');
+      overlay.setAttribute('aria-live', 'assertive');
+      overlay.innerHTML =
+        '<div class="wait-box">' +
+        '<div class="wait-spinner"></div>' +
+        '<h3>Please wait…</h3>' +
+        '<p id="wait-overlay-msg"></p>' +
+        '<p class="wait-warn">Do not close, refresh or go back until this finishes.</p>' +
+        '</div>';
+      document.body.appendChild(overlay);
+    }
+    document.getElementById('wait-overlay-msg').textContent =
+      message || 'Saving your registration and generating your ID. This may take up to a minute.';
+    overlay.style.display = 'flex';
+    window.addEventListener('beforeunload', waitUnloadGuard);
+  }
+
+  function hideWaitOverlay() {
+    const overlay = document.getElementById('wait-overlay');
+    if (overlay) overlay.style.display = 'none';
+    window.removeEventListener('beforeunload', waitUnloadGuard);
+  }
+
+  function waitUnloadGuard(e) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+
   function processRegistrationWithDoc(paymentId, amount, feeResult) {
     const btn = document.getElementById('reg-submit-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+    showWaitOverlay();
     const regDoc = document.getElementById('reg-doc');
 
     if (regDoc && regDoc.files && regDoc.files.length > 0) {
@@ -580,6 +632,7 @@
         });
       };
       reader.onerror = function () {
+        hideWaitOverlay();
         showToast('Failed to read document. Please try again.', 'error');
         if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
       };
@@ -618,6 +671,7 @@
           return res.json();
         })
         .then(result => {
+          hideWaitOverlay();
           if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
           if (result.success) {
             showRegistrationSuccess(result, data);
@@ -629,8 +683,10 @@
         })
         .catch(err => {
           if (retryCount < 1) {
+            showWaitOverlay('Taking longer than usual. Retrying, please keep this page open…');
             setTimeout(() => sendRequest(retryCount + 1), 2000);
           } else {
+            hideWaitOverlay();
             if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
             showToast('Network Error. Payment ID: ' + paymentId + '. Please contact: 98303 67423', 'error');
           }

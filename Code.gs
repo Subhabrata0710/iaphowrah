@@ -323,7 +323,9 @@ function handleRegistration(data) {
     if (data.docData) {
       try {
         var decodedDoc = Utilities.base64Decode(data.docData);
-        var docBlob = Utilities.newBlob(decodedDoc, data.docMimeType, data.docName);
+        // Stored name: RegID_originalname.ext  (e.g. WBP26-0001_xyz.pdf)
+        var storedDocName = regId + '_' + safeFileName(data.docName);
+        var docBlob = Utilities.newBlob(decodedDoc, data.docMimeType, storedDocName);
         if (UPLOAD_FOLDER_ID) {
           var docParentFolder = DriveApp.getFolderById(UPLOAD_FOLDER_ID);
           var docFolders = docParentFolder.getFoldersByName('Documents');
