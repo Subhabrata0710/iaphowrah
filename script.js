@@ -24,7 +24,7 @@
     confPartner: 'Roshni Enterprise Event Management',
     confPartnerPhone: '9830367423',
     idPrefix: 'WBP26',
-    earlyBirdEnd: '2026-09-30', // inclusive
+    earlyBirdEnd: '2026-10-10', // inclusive
     secondPeriodEnd: '2026-10-31', // inclusive
   };
 
