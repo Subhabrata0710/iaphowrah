@@ -457,8 +457,8 @@
     feeBox.style.display = 'block';
 
     const periodLabels = {
-      earlyBird: '🐦 Early Bird — Up to 30 September 2026',
-      regular: '📅 Regular — 1 October to 31 October 2026',
+      earlyBird: 'Early Bird — Up to 10 October 2026',
+      regular: 'Regular — 1 October to 31 October 2026',
       tba: '📢 Period Ended'
     };
 
