@@ -24,7 +24,7 @@
     confPartner: 'Roshni Enterprise Event Management',
     confPartnerPhone: '9830367423',
     idPrefix: 'WBP26',
-    earlyBirdEnd: '2026-10-10', // inclusive
+    earlyBirdEnd: '2026-10-20', // inclusive
     secondPeriodEnd: '2026-10-31', // inclusive
   };
 
@@ -457,8 +457,8 @@
     feeBox.style.display = 'block';
 
     const periodLabels = {
-      earlyBird: 'Early Bird — Up to 10 October 2026',
-      regular: 'Regular — 1 October to 31 October 2026',
+      earlyBird: 'Early Bird — Up to 20 October 2026',
+      regular: 'Regular — 21 October to 31 October 2026',
       tba: '📢 Period Ended'
     };
 
