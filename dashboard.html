@@ -162,6 +162,15 @@
               <div class="p-value is-loading" id="p-status">Loading...</div>
             </div>
           </div>
+          <div class="profile-item">
+            <span class="p-icon"><svg class="icon" aria-hidden="true">
+                <use href="#i-id" />
+              </svg></span>
+            <div class="p-body">
+              <div class="p-label">IAP Membership No.</div>
+              <div class="p-value is-loading" id="p-iap-member">Loading...</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -313,6 +322,37 @@
 
   <div id="footer-placeholder"></div>
 
+  <!-- ===================== IAP MEMBERSHIP MODAL ===================== -->
+  <div class="iap-modal-backdrop" id="iap-modal" role="dialog" aria-modal="true" aria-labelledby="iap-modal-title"
+    style="display: none;">
+    <div class="iap-modal-card">
+      <div class="iap-modal-badge">
+        <svg class="icon" aria-hidden="true">
+          <use href="#i-id" />
+        </svg>
+        <span>IAP Verification</span>
+      </div>
+      <h3 id="iap-modal-title">Enter your IAP Membership Number</h3>
+      <p class="iap-modal-desc">
+        Please provide your Indian Academy of Pediatrics (IAP) membership number to link with your conference
+        registration. You only need to provide this once.
+      </p>
+
+      <form id="iap-modal-form" onsubmit="return false;" novalidate>
+        <div class="iap-input-wrap">
+          <label for="iap-member-input">IAP Membership Number</label>
+          <input type="text" id="iap-member-input" class="iap-input" placeholder=" " autocomplete="off" required />
+        </div>
+        <p class="upload-status" id="iap-modal-status" role="status" aria-live="polite"></p>
+
+        <div class="iap-modal-actions">
+          <button type="button" id="iap-modal-skip" class="btn btn-secondary">I'll do this later</button>
+          <button type="submit" id="iap-modal-save" class="btn btn-gold">Save &amp; Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="loader-overlay">
     <div class="loader-spinner"></div>
     <div class="loader-text">Loading</div>
@@ -441,12 +481,15 @@
           'p-email': profile.email || '-',
           'p-category': profile.category || '-',
           'p-amount': formatAmount(profile),
-          'p-status': profile.paymentStatus || '-'
+          'p-status': profile.paymentStatus || '-',
+          'p-iap-member': profile.iapMembership ? profile.iapMembership : 'Not provided'
         };
         Object.keys(map).forEach(function (id) {
           var el = $(id);
-          el.textContent = map[id];
-          el.classList.remove('is-loading');
+          if (el) {
+            el.textContent = map[id];
+            el.classList.remove('is-loading');
+          }
         });
         $('p-regid').textContent = profile.regId;
         $('welcome-text').textContent = 'Welcome, ' + (profile.name || profile.regId);
@@ -653,12 +696,135 @@
         });
       }
 
+      // ---------------- IAP Membership Logic ----------------
+      var IAP_SKIPPED_PREFIX = 'iap_skip_';
+
+      function hasSkippedIap(regId) {
+        try {
+          return sessionStorage.getItem(IAP_SKIPPED_PREFIX + regId) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function markSkippedIap(regId) {
+        try {
+          sessionStorage.setItem(IAP_SKIPPED_PREFIX + regId, '1');
+        } catch (e) { }
+      }
+
+      function openIapModal(reason) {
+        var modal = $('iap-modal');
+        if (!modal) return;
+        var input = $('iap-member-input');
+        if (input) input.value = '';
+        var status = $('iap-modal-status');
+        if (status) {
+          status.textContent = '';
+          status.className = 'upload-status';
+        }
+        modal.style.display = 'flex';
+        if (input) setTimeout(function () { input.focus(); }, 100);
+      }
+
+      function closeIapModal() {
+        var modal = $('iap-modal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function checkIapMembershipPrompt(trigger) {
+        if (!profile) return false;
+        // If already provided in profile / sheet, do NOT ask
+        if (profile.hasIapMembership || (profile.iapMembership && profile.iapMembership.trim() !== '')) {
+          return false;
+        }
+        // If triggered after login and user previously chose "I'll do this later" in this session, don't nag
+        if (trigger === 'login' && hasSkippedIap(profile.regId)) {
+          return false;
+        }
+        openIapModal(trigger);
+        return true;
+      }
+
+      function saveIapMembership() {
+        var input = $('iap-member-input');
+        var val = (input && input.value || '').trim();
+        var status = $('iap-modal-status');
+        var saveBtn = $('iap-modal-save');
+
+        if (!val) {
+          if (status) {
+            status.textContent = 'Please enter your IAP Membership number, or click "I\'ll do this later".';
+            status.className = 'upload-status err';
+          }
+          if (input) input.focus();
+          return;
+        }
+
+        if (status) {
+          status.textContent = 'Saving IAP Membership number...';
+          status.className = 'upload-status';
+        }
+        if (saveBtn) saveBtn.disabled = true;
+
+        send({
+          action: 'saveIapMembership',
+          regId: session.regId,
+          phone: session.phone,
+          iapMembership: val
+        }, 'Saving your IAP membership number...')
+          .then(function (data) {
+            if (saveBtn) saveBtn.disabled = false;
+            if (data && data.success) {
+              if (data.profile) {
+                applyProfile(data.profile);
+              } else if (profile) {
+                profile.iapMembership = val;
+                profile.hasIapMembership = true;
+                renderProfile();
+              }
+              closeIapModal();
+              // If there's a pending abstract ready to submit, proceed with upload
+              if (pending.abstract && profile && profile.hasIdentity && $('declaration-check').checked) {
+                proceedUploadAbstract();
+              }
+            } else {
+              if (status) {
+                status.textContent = (data && data.message) || 'Failed to save. Please try again.';
+                status.className = 'upload-status err';
+              }
+            }
+          })
+          .catch(function () {
+            if (saveBtn) saveBtn.disabled = false;
+            if (status) {
+              status.textContent = 'Could not reach the server. Please check your connection and try again.';
+              status.className = 'upload-status err';
+            }
+          });
+      }
+
       function uploadAbstract() {
         var file = pending.abstract;
         if (!file || !profile || !profile.hasIdentity) return;
         if (!$('declaration-check').checked) {
           return setStatus('abstract-status', 'Please tick the declaration before submitting.', 'err');
         }
+        setStatus('abstract-status', '');
+
+        // If IAP Membership number is missing, ask for it first!
+        if (!profile.hasIapMembership && (!profile.iapMembership || profile.iapMembership.trim() === '')) {
+          openIapModal('abstract');
+          return;
+        }
+
+        proceedUploadAbstract();
+      }
+
+      function proceedUploadAbstract() {
+        var file = pending.abstract;
+        if (!file || !profile || !profile.hasIdentity) return;
+        if (!$('declaration-check').checked) return;
         setStatus('abstract-status', '');
 
         readAsBase64(file).then(function (b64) {
@@ -702,12 +868,30 @@
       $('photo-submit').addEventListener('click', uploadImage);
       $('abstract-submit').addEventListener('click', uploadAbstract);
 
+      // IAP modal listeners
+      var iapModalSkip = $('iap-modal-skip');
+      if (iapModalSkip) {
+        iapModalSkip.addEventListener('click', function () {
+          if (profile && profile.regId) markSkippedIap(profile.regId);
+          closeIapModal();
+        });
+      }
+      var iapModalForm = $('iap-modal-form');
+      if (iapModalForm) {
+        iapModalForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          saveIapMembership();
+        });
+      }
+
       if (!API_URL) { showPageAlert('The portal is not configured yet. Please contact the organisers.'); return; }
 
       api({ action: 'profile', regId: session.regId, phone: session.phone })
         .then(function (data) {
           if (data && data.success && data.profile) {
             applyProfile(data.profile);
+            // After logging in, ask for IAP membership if not filled yet (only 1 time per session if skipped)
+            checkIapMembershipPrompt('login');
           } else if (data && data.code === 'AUTH_FAILED') {
             goToLogin();
           } else {

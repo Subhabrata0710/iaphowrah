@@ -40,6 +40,9 @@ const UPLOAD_FOLDER_ID = '1BKUq5rWxkEiz5EEfZ_RkQJKzcatPNRzC';
 // Name of the sheet tab that logs every file a delegate uploads
 const UPLOADS_SHEET_NAME = 'Uploads';
 
+// Name of the sheet tab that stores IAP Membership numbers
+const IAP_MEMBERSHIPS_SHEET_NAME = 'IAP_Memberships';
+
 // false = uploaded files stay private (only the Drive owner and people the
 //         folder is shared with can open them). Recommended, because ID
 //         documents are sensitive.
@@ -60,12 +63,14 @@ const COL_DECLARATION     = 21;  // U  Yes when the delegate ticked the declarat
 const COL_DECLARATION_AT  = 22;  // V
 const COL_ABSTRACT_URL    = 23;  // W  latest abstract
 const COL_ABSTRACT_AT     = 24;  // X
+const COL_IAP_MEMBERSHIP  = 25;  // Y  IAP membership number
 const PORTAL_HEADERS = [
   'ID / Photo URL',
   'Declaration Accepted',
   'Declaration Time',
   'Abstract URL',
-  'Abstract Uploaded At'
+  'Abstract Uploaded At',
+  'IAP Membership Number'
 ];
 
 
@@ -106,6 +111,10 @@ function doPost(e) {
 
     else if (action === 'upload') {
       return handleUpload(data);
+    }
+
+    else if (action === 'saveIapMembership') {
+      return handleSaveIapMembership(data);
     }
 
     return createJsonResponse({
@@ -561,20 +570,22 @@ function normalizePhone(value) {
     .slice(-10);
 }
 
-// Returns the Registrations sheet with the portal headers (T:X) guaranteed.
+// Returns the Registrations sheet with the portal headers guaranteed.
 function getRegistrationsSheet() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheetByName('Registrations');
   if (!sheet) return null;
 
-  // Make sure the grid is wide enough for columns T:X
-  if (sheet.getMaxColumns() < COL_ABSTRACT_AT) {
-    sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_ABSTRACT_AT - sheet.getMaxColumns());
+  // Make sure the grid is wide enough for columns T:Y
+  if (sheet.getMaxColumns() < COL_IAP_MEMBERSHIP) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_IAP_MEMBERSHIP - sheet.getMaxColumns());
   }
 
   const headerCell = sheet.getRange(1, COL_IDENTITY_URL, 1, PORTAL_HEADERS.length);
   const existing = headerCell.getValues()[0];
   if (existing.join('') === '') {
+    headerCell.setValues([PORTAL_HEADERS]).setFontWeight('bold');
+  } else if (existing.length < PORTAL_HEADERS.length || !existing[PORTAL_HEADERS.length - 1]) {
     headerCell.setValues([PORTAL_HEADERS]).setFontWeight('bold');
   }
   return sheet;
@@ -602,10 +613,13 @@ function authenticate(regId, phone) {
 
 // Reads one row fresh from the sheet and shapes it for the dashboard.
 function buildProfile(sheet, rowNumber) {
-  const width = Math.max(sheet.getLastColumn(), COL_ABSTRACT_AT);
+  const width = Math.max(sheet.getLastColumn(), COL_IAP_MEMBERSHIP);
   const row = sheet.getRange(rowNumber, 1, 1, width).getValues()[0];
   const at = function (col) { return row[col - 1]; };
   const regId = String(row[0]);
+
+  // Read IAP membership from column Y or from dedicated IAP_Memberships sheet
+  const iapMemberNo = String(at(COL_IAP_MEMBERSHIP) || readIapMembership(regId) || '').trim();
 
   return {
     regId: regId,
@@ -616,6 +630,8 @@ function buildProfile(sheet, rowNumber) {
     amount: Number(row[9]) || 0,
     isFree: row[13] === 'Yes',
     paymentStatus: String(row[11] || ''),
+    iapMembership: iapMemberNo,
+    hasIapMembership: iapMemberNo !== '',
     hasIdentity: String(at(COL_IDENTITY_URL) || '') !== '',
     declarationAccepted: String(at(COL_DECLARATION) || '') === 'Yes',
     abstractSubmitted: String(at(COL_ABSTRACT_URL) || '') !== '',
@@ -690,6 +706,118 @@ function handleProfile(data) {
     return createJsonResponse({ success: false, code: 'AUTH_FAILED', message: AUTH_FAILED_MESSAGE });
   }
   return createJsonResponse({ success: true, profile: buildProfile(auth.sheet, auth.rowNumber) });
+}
+
+// ---------------- IAP Membership Storage ----------------
+// Reads existing membership number for a regId from the IAP_Memberships sheet
+function readIapMembership(regId) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const mSheet = ss.getSheetByName(IAP_MEMBERSHIPS_SHEET_NAME);
+    if (!mSheet || mSheet.getLastRow() < 2) return '';
+
+    const targetId = String(regId || '').trim().toUpperCase();
+    const rows = mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 7).getValues();
+    // Headers: Timestamp (0), Registration ID (1), Name (2), Mobile (3), Email (4), Category (5), IAP Membership Number (6)
+    for (let i = rows.length - 1; i >= 0; i--) {
+      if (String(rows[i][1]).trim().toUpperCase() === targetId) {
+        return String(rows[i][6] || '').trim();
+      }
+    }
+  } catch (e) {
+    console.error('readIapMembership error:', e);
+  }
+  return '';
+}
+
+// Appends or updates IAP membership in dedicated sheet
+function appendIapMembershipLog(regId, name, mobile, email, category, membershipNo) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName(IAP_MEMBERSHIPS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(IAP_MEMBERSHIPS_SHEET_NAME);
+    sheet.appendRow([
+      'Timestamp',
+      'Registration ID',
+      'Name',
+      'Mobile Number',
+      'Email',
+      'Category',
+      'IAP Membership Number'
+    ]);
+    sheet.getRange('A1:G1').setFontWeight('bold');
+  }
+
+  // Update existing row if present, else append new row
+  const targetId = String(regId || '').trim().toUpperCase();
+  const lastRow = sheet.getLastRow();
+  let updated = false;
+
+  if (lastRow > 1) {
+    const rows = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i][0]).trim().toUpperCase() === targetId) {
+        const rowIdx = i + 2;
+        sheet.getRange(rowIdx, 1).setValue(new Date());
+        sheet.getRange(rowIdx, 3).setValue(name);
+        sheet.getRange(rowIdx, 4).setValue(mobile);
+        sheet.getRange(rowIdx, 5).setValue(email);
+        sheet.getRange(rowIdx, 6).setValue(category);
+        sheet.getRange(rowIdx, 7).setValue(membershipNo);
+        updated = true;
+        break;
+      }
+    }
+  }
+
+  if (!updated) {
+    sheet.appendRow([
+      new Date(),
+      regId,
+      name,
+      mobile,
+      email,
+      category,
+      membershipNo
+    ]);
+  }
+}
+
+// Handler for saving IAP membership from delegate dashboard
+function handleSaveIapMembership(data) {
+  const auth = authenticate(data.regId, data.phone);
+  if (!auth) {
+    return createJsonResponse({ success: false, code: 'AUTH_FAILED', message: AUTH_FAILED_MESSAGE });
+  }
+
+  const membershipNo = String(data.iapMembership || '').trim();
+  if (!membershipNo) {
+    return createJsonResponse({ success: false, message: 'Please provide a valid IAP Membership number.' });
+  }
+
+  const sheet = auth.sheet;
+  const rowNumber = auth.rowNumber;
+  const profile = buildProfile(sheet, rowNumber);
+
+  // 1. Save in column Y of Registrations sheet
+  sheet.getRange(rowNumber, COL_IAP_MEMBERSHIP).setValue(membershipNo);
+
+  // 2. Save in dedicated "IAP_Memberships" sheet with name, regId, mobile, email, category
+  appendIapMembershipLog(
+    profile.regId,
+    profile.name,
+    profile.mobile,
+    profile.email,
+    profile.category,
+    membershipNo
+  );
+
+  return createJsonResponse({
+    success: true,
+    message: 'IAP Membership number saved successfully.',
+    iapMembership: membershipNo,
+    profile: buildProfile(sheet, rowNumber)
+  });
 }
 
 // ---------------- Upload ----------------
