@@ -519,7 +519,7 @@
         var ab = $('abstract-badge');
         ab.textContent = abstractDone ? 'Submitted' : (verified ? 'Open' : 'Locked');
         ab.className = 'badge ' + (abstractDone ? 'badge-success' : (verified ? 'badge-teal' : 'badge-primary'));
-        $('abstract-submit').textContent = abstractDone ? 'Replace abstract' : 'Submit abstract';
+        $('abstract-submit').textContent = abstractDone ? 'Upload abstract' : 'Submit abstract'; ///Upload was Replace
 
         renderSteps();
         updateButtons();
