@@ -25,7 +25,7 @@
     confPartnerPhone: '9830367423',
     idPrefix: 'WBP26',
     earlyBirdEnd: '2026-10-20', // inclusive
-    secondPeriodEnd: '2026-10-31', // inclusive
+    secondPeriodEnd: '2026-11-15', // inclusive
   };
 
   // ============================================================
@@ -458,7 +458,7 @@
 
     const periodLabels = {
       earlyBird: 'Early Bird — Up to 20 October 2026',
-      regular: 'Regular — 21 October to 31 October 2026',
+      regular: 'Regular — 21 October to 15 November 2026',
       tba: '📢 Period Ended'
     };
 
