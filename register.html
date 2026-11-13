@@ -109,9 +109,33 @@
         <div class="text-center" style="margin-bottom: 2rem;">
           <h2 style="font-size:1.8rem; margin-bottom: 0.5rem;">Register Now</h2>
           <p class="text-muted">Fill in your details below to register. Fields marked with * are mandatory.</p>
-          <a href="images/Format Authorization Letter.pdf" download>
-            Click here to download the Authorization Letter Format
-          </a>
+          <div style="margin: 15px 0 10px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="btn-open-already-registered" class="btn btn-outline"
+              style="font-weight: 600; font-size: 0.95rem; border-color: var(--color-primary); color: var(--color-primary); padding: 8px 18px;">
+              Already Registered? Click Here
+            </button>
+            <a href="images/Format Authorization Letter.pdf" download class="btn btn-outline"
+              style="font-size: 0.9rem; padding: 8px 18px;">
+              Download Authorization Letter
+            </a>
+          </div>
+        </div>
+
+        <!-- Banner for already registered mode (hidden by default) -->
+        <div id="already-reg-banner"
+          style="display: none; background: #e8f4fd; border: 1px solid #b6d4fe; border-left: 5px solid var(--color-secondary); border-radius: 8px; padding: 12px 18px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <span style="font-weight: 700; color: var(--color-primary);">Linked Registration ID: </span>
+              <strong id="banner-reg-id" style="color: var(--color-secondary); font-size: 1.05rem;">WBP26-XXXX</strong>
+              <div style="font-size: 0.85rem; color: #555; margin-top: 3px;">Conference registration verified. You can
+                now select and add a workshop.</div>
+            </div>
+            <button type="button" id="btn-clear-already-registered" class="btn btn-sm btn-outline"
+              style="font-size: 0.8rem; padding: 4px 10px;">
+              Switch to New Registration
+            </button>
+          </div>
         </div>
 
         <form id="reg-form" onsubmit="event.preventDefault(); payAndRegisterWBP();">
@@ -170,6 +194,25 @@
             <label id="upload-label" for="reg-doc">Upload Document</label>
             <input type="file" id="reg-doc" class="form-control" accept=".pdf,image/png,image/jpeg,image/jpg">
             <small class="text-muted" style="display:block; margin-top:5px;">Supported formats: PDF, JPG, PNG.</small>
+          </div>
+
+          <div class="form-section-title"><span>3</span> Pre-Conference Workshop(s)</div>
+
+          <div class="form-group">
+            <label style="display:block; margin-bottom: 8px;">
+              Select Workshop(s) <span class="text-muted" style="font-weight: normal; font-size: 0.85rem;">(Requires
+                Conference Registration • You may select multiple)</span>
+            </label>
+
+            <!-- Container rendered dynamically from WORKSHOP_CONFIG -->
+            <div id="workshop-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Injected by script.js -->
+            </div>
+
+            <div id="already-registered-workshops-badge"
+              style="display: none; margin-top: 10px; background: #e7f5ea; border: 1px solid #b7ebc3; border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; color: #155724;">
+              <strong>Already Registered Workshops:</strong> <span id="existing-workshops-text">None</span>
+            </div>
           </div>
 
           <div class="form-divider"></div>
@@ -269,6 +312,11 @@
                   <span class="reg-detail-value" id="s-date">-</span>
                 </div>
                 <div class="reg-detail-row">
+                  <span class="reg-detail-label">Workshop</span>
+                  <span class="reg-detail-value" id="s-workshop"
+                    style="font-weight: 600; color: var(--color-primary);">-</span>
+                </div>
+                <div class="reg-detail-row">
                   <span class="reg-detail-label">Venue</span>
                   <span class="reg-detail-value" id="s-venue">-</span>
                 </div>
@@ -297,6 +345,55 @@
 
     </div>
   </main>
+
+  <!-- ===================== ALREADY REGISTERED MODAL ===================== -->
+  <div class="already-reg-modal-backdrop" id="already-reg-modal" role="dialog" aria-modal="true" style="display: none;">
+    <div class="already-reg-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div>
+          <h3 style="margin: 0; color: var(--color-primary); font-size: 1.3rem;">Fetch Existing Registration</h3>
+          <p class="text-muted" style="margin: 4px 0 0; font-size: 0.88rem;">
+            Enter your Phone Number &amp; Email (and optional Registration ID) to load your details and add a workshop.
+          </p>
+        </div>
+        <button type="button" id="already-reg-modal-close"
+          style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color:#888; line-height: 1;">&times;</button>
+      </div>
+
+      <form id="already-reg-form" onsubmit="event.preventDefault(); fetchExistingRegistration();">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="fetch-phone"
+            style="display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px;">Phone Number (WhatsApp)
+            *</label>
+          <input type="tel" id="fetch-phone" class="form-control" pattern="[6-9]\d{9}"
+            placeholder="10-digit mobile number" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="fetch-email"
+            style="display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px;">Email Address *</label>
+          <input type="email" id="fetch-email" class="form-control" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label for="fetch-reg-id" style="display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px;">
+            Registration ID <span class="text-muted" style="font-weight: normal; font-size: 0.82rem;">(Optional, e.g.
+              WBP26-0001)</span>
+          </label>
+          <input type="text" id="fetch-reg-id" class="form-control" placeholder="Optional">
+        </div>
+
+        <p id="fetch-status-msg" style="display: none; font-size: 0.88rem; margin-bottom: 14px;"></p>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" id="already-reg-modal-cancel" class="btn btn-secondary"
+            style="padding: 8px 18px;">Cancel</button>
+          <button type="submit" id="btn-submit-fetch" class="btn btn-gold" style="padding: 8px 22px;">Fetch
+            Details</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Footer Placeholder -->
   <div id="footer-placeholder"></div>

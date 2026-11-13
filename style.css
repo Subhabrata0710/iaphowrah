@@ -2113,3 +2113,106 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   .hi-grid { grid-template-columns: repeat(2,1fr); }
   .carousel-nav { display: none; }
 }
+
+/* ============================================================
+   ALREADY REGISTERED MODAL
+   ============================================================ */
+.already-reg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(11, 44, 77, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.already-reg-modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 16px 40px rgba(11, 44, 77, 0.25);
+  animation: modalFadeIn 0.25s ease-out;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* ============================================================
+   WORKSHOP CHECKBOX CARDS
+   ============================================================ */
+
+.workshop-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  background: #fff;
+  position: relative;
+}
+
+.workshop-card:hover {
+  border-color: var(--color-primary);
+  background: #f0f5ff;
+  box-shadow: 0 2px 10px rgba(11,44,77,0.08);
+}
+
+.workshop-card input[type='checkbox'].workshop-checkbox {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.workshop-card:has(input:checked):not(.workshop-card--done) {
+  border-color: var(--color-primary);
+  background: #eaf0ff;
+}
+
+.workshop-card--done {
+  border-color: var(--color-success, #28a745);
+  background: #f0faf3;
+  opacity: 0.85;
+  cursor: default;
+}
+
+.workshop-card--done:hover {
+  box-shadow: none;
+}
+
+.workshop-card-body {
+  flex: 1;
+}
+
+.workshop-card-name {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.workshop-card-meta {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.workshop-card-fee {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-secondary, #c8970c);
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 10px;
+  align-self: center;
+}

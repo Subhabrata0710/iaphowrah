@@ -43,6 +43,9 @@ const UPLOADS_SHEET_NAME = 'Uploads';
 // Name of the sheet tab that stores IAP Membership numbers
 const IAP_MEMBERSHIPS_SHEET_NAME = 'IAP_Memberships';
 
+// Name of the sheet tab that stores dedicated Workshop Registrations
+const WORKSHOPS_SHEET_NAME = 'Workshops';
+
 // false = uploaded files stay private (only the Drive owner and people the
 //         folder is shared with can open them). Recommended, because ID
 //         documents are sensitive.
@@ -64,13 +67,15 @@ const COL_DECLARATION_AT  = 22;  // V
 const COL_ABSTRACT_URL    = 23;  // W  latest abstract
 const COL_ABSTRACT_AT     = 24;  // X
 const COL_IAP_MEMBERSHIP  = 25;  // Y  IAP membership number
+const COL_WORKSHOP        = 26;  // Z  Workshop name
 const PORTAL_HEADERS = [
   'ID / Photo URL',
   'Declaration Accepted',
   'Declaration Time',
   'Abstract URL',
   'Abstract Uploaded At',
-  'IAP Membership Number'
+  'IAP Membership Number',
+  'Workshop'
 ];
 
 
@@ -115,6 +120,14 @@ function doPost(e) {
 
     else if (action === 'saveIapMembership') {
       return handleSaveIapMembership(data);
+    }
+
+    else if (action === 'fetchRegistration') {
+      return handleFetchRegistration(data);
+    }
+
+    else if (action === 'registerWorkshop') {
+      return handleRegisterWorkshop(data);
     }
 
     return createJsonResponse({
@@ -382,6 +395,19 @@ function handleRegistration(data) {
       qrFileId // Temporarily store QR ID in Status column for easy retrieval on delete
     ]);
 
+    // If workshop selected during initial registration, record in column Z (COL_WORKSHOP) & log to Workshops sheet
+    const newRowNumber = sheet.getLastRow();
+    if (data.workshop) {
+      try {
+        if (sheet.getMaxColumns() < COL_WORKSHOP) {
+          sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_WORKSHOP - sheet.getMaxColumns());
+        }
+        sheet.getRange(newRowNumber, COL_WORKSHOP).setValue(data.workshop);
+        appendWorkshopLog(regId, data.name || '', data.mobile || '', data.email || '', data.category || '', data.workshop, data.workshopFee || 0, data.paymentId || '');
+      } catch (wsErr) {
+        console.error('Failed to save initial workshop to sheet: ' + wsErr.toString());
+      }
+    }
 
     // --------------------------------------------------------
     // 5. Send Acknowledgment Email
@@ -546,12 +572,295 @@ function handleLookup(data) {
 
 
   return createJsonResponse({
-
     success: false,
-
     notFound: true
-
   });
+}
+
+// ============================================================
+// FETCH REGISTRATION HANDLER (FOR ALREADY REGISTERED ATTENDEES)
+// ============================================================
+function handleFetchRegistration(data) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheet = ss.getSheetByName('Registrations');
+    if (!sheet || sheet.getLastRow() < 2) {
+      return createJsonResponse({
+        success: false,
+        message: 'No registrations found in database.'
+      });
+    }
+
+    const inputPhone = normalizePhone(data.phone || data.mobile || '');
+    const inputEmail = String(data.email || '').trim().toLowerCase();
+    const inputRegId = String(data.regId || '').trim().toUpperCase();
+
+    if (!inputPhone || !inputEmail) {
+      return createJsonResponse({
+        success: false,
+        message: 'Please provide both phone number and email address.'
+      });
+    }
+
+    const maxCols = Math.max(sheet.getLastColumn(), COL_WORKSHOP);
+    const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, maxCols).getValues();
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowId = String(row[0] || '').trim().toUpperCase();
+      const rowPhone = normalizePhone(row[COL_MOBILE - 1]);
+      const rowEmail = String(row[5] || '').trim().toLowerCase();
+
+      // If regId was supplied, it must match.
+      if (inputRegId && rowId !== inputRegId) {
+        continue;
+      }
+
+      // Check phone AND email match
+      if (rowPhone === inputPhone && rowEmail === inputEmail) {
+        const existingWorkshop = String(row[COL_WORKSHOP - 1] || '').trim();
+
+        return createJsonResponse({
+          success: true,
+          registration: {
+            regId: rowId,
+            name: String(row[2] || ''),
+            mobile: String(row[3] || ''),
+            email: String(row[5] || ''),
+            category: String(row[6] || ''),
+            institution: String(row[7] || ''),
+            designation: String(row[8] || ''),
+            amount: Number(row[9]) || 0,
+            paymentStatus: String(row[11] || ''),
+            isFree: row[13] === 'Yes',
+            workshop: existingWorkshop
+          }
+        });
+      }
+    }
+
+    return createJsonResponse({
+      success: false,
+      message: 'No matching conference registration found with this phone number and email.'
+    });
+
+  } catch (err) {
+    console.error('handleFetchRegistration error:', err);
+    return createJsonResponse({
+      success: false,
+      message: 'Error fetching registration: ' + err.toString()
+    });
+  }
+}
+
+// ============================================================
+// WORKSHOP LOGGING HELPER
+// ============================================================
+function appendWorkshopLog(regId, name, phone, email, category, workshopName, fee, paymentId) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let wsSheet = ss.getSheetByName(WORKSHOPS_SHEET_NAME);
+    if (!wsSheet) {
+      wsSheet = ss.insertSheet(WORKSHOPS_SHEET_NAME);
+      wsSheet.appendRow([
+        'Timestamp',
+        'Registration ID',
+        'Name',
+        'Mobile',
+        'Email',
+        'Category',
+        'Workshop',
+        'Workshop Fee',
+        'Payment ID',
+        'Status'
+      ]);
+      wsSheet.getRange('A1:J1').setFontWeight('bold');
+    }
+
+    wsSheet.appendRow([
+      new Date(),
+      regId || '',
+      name || '',
+      phone || '',
+      email || '',
+      category || '',
+      workshopName || '',
+      fee || 0,
+      paymentId || '',
+      'Confirmed'
+    ]);
+  } catch (e) {
+    console.error('appendWorkshopLog error:', e);
+  }
+}
+
+// ============================================================
+// REGISTER WORKSHOP (FOR ALREADY REGISTERED USERS)
+// ============================================================
+function handleRegisterWorkshop(data) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheet = ss.getSheetByName('Registrations');
+    if (!sheet) {
+      return createJsonResponse({
+        success: false,
+        message: 'Registrations sheet not found.'
+      });
+    }
+
+    const regId = String(data.regId || '').trim().toUpperCase();
+    const phone = normalizePhone(data.phone || data.mobile);
+    const email = String(data.email || '').trim().toLowerCase();
+    const workshop = String(data.workshop || '').trim();
+    const workshopFee = Number(data.workshopFee) || 0;
+    const paymentId = String(data.paymentId || '').trim();
+
+    if (!regId || !phone || !email || !workshop) {
+      return createJsonResponse({
+        success: false,
+        message: 'Missing required parameters for workshop registration.'
+      });
+    }
+
+    // Ensure grid is wide enough for column Z
+    if (sheet.getMaxColumns() < COL_WORKSHOP) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_WORKSHOP - sheet.getMaxColumns());
+    }
+
+    const maxCols = Math.max(sheet.getLastColumn(), COL_WORKSHOP);
+    const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, maxCols).getValues();
+    let targetRow = -1;
+    let registrant = null;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rId = String(row[0] || '').trim().toUpperCase();
+      const rPhone = normalizePhone(row[COL_MOBILE - 1]);
+      const rEmail = String(row[5] || '').trim().toLowerCase();
+
+      if (rId === regId && (rPhone === phone || rEmail === email)) {
+        targetRow = i + 2; // 1-based, skipping header
+        registrant = {
+          regId: rId,
+          name: String(row[2] || ''),
+          mobile: String(row[3] || ''),
+          email: String(row[5] || ''),
+          category: String(row[6] || ''),
+          institution: String(row[7] || ''),
+          designation: String(row[8] || ''),
+          currentWorkshop: String(row[COL_WORKSHOP - 1] || '').trim(),
+          amount: Number(row[9]) || 0
+        };
+        break;
+      }
+    }
+
+    if (targetRow === -1 || !registrant) {
+      return createJsonResponse({
+        success: false,
+        message: 'Could not authenticate conference registration. Workshop requires conference registration.'
+      });
+    }
+
+    // Combine or set workshop name in Registrations sheet column Z
+    let updatedWorkshop = workshop;
+    if (registrant.currentWorkshop && registrant.currentWorkshop !== 'None' && registrant.currentWorkshop !== workshop) {
+      updatedWorkshop = registrant.currentWorkshop + ', ' + workshop;
+    }
+    sheet.getRange(targetRow, COL_WORKSHOP).setValue(updatedWorkshop);
+
+    // Also update notes in Column P (16) to keep an audit trail of add-on payments
+    const existingNotes = String(sheet.getRange(targetRow, 16).getValue() || '');
+    const newNote = `[Workshop Added: ${workshop} | Fee: Rs.${workshopFee} | PayId: ${paymentId} | ${new Date().toISOString()}]`;
+    sheet.getRange(targetRow, 16).setValue(existingNotes ? existingNotes + '\n' + newNote : newNote);
+
+    // Append to dedicated Workshops sheet
+    appendWorkshopLog(
+      regId,
+      registrant.name,
+      registrant.mobile,
+      registrant.email,
+      registrant.category,
+      workshop,
+      workshopFee,
+      paymentId
+    );
+
+    // Send Workshop Confirmation Email
+    try {
+      sendWorkshopConfirmationEmail(regId, registrant, workshop, workshopFee, paymentId);
+    } catch (eMailErr) {
+      console.error('Workshop email failure:', eMailErr);
+      sendFailureEmail(eMailErr, JSON.stringify({
+        type: 'WORKSHOP_EMAIL_FAILURE',
+        regId: regId,
+        workshop: workshop
+      }));
+    }
+
+    return createJsonResponse({
+      success: true,
+      regId: regId,
+      workshop: updatedWorkshop,
+      message: 'Workshop registration confirmed successfully.'
+    });
+
+  } catch (err) {
+    console.error('handleRegisterWorkshop error:', err);
+    sendFailureEmail(err, JSON.stringify(data));
+    return createJsonResponse({
+      success: false,
+      message: 'Failed to record workshop: ' + err.toString()
+    });
+  }
+}
+
+// ============================================================
+// SEND WORKSHOP CONFIRMATION EMAIL
+// ============================================================
+function sendWorkshopConfirmationEmail(regId, registrant, workshopName, fee, paymentId) {
+  const subject = `Workshop Registration Confirmed - 45th WB PEDICON 2026 [${regId}]`;
+
+  const plainBody = `Dear ${registrant.name || 'Participant'},
+
+You have already registered for the 45th WB PEDICON 2026 Conference.
+
+Your registration for the following workshop is now confirmed:
+─────────────────────────────────────────────────
+Registration ID   : ${regId}
+Workshop          : ${workshopName}
+Date              : 18th December 2026
+Venue             : B R Singh Hospital Auditorium
+Amount Paid       : ₹${fee}
+Payment ID        : ${paymentId || 'N/A'}
+Status            : Confirmed
+─────────────────────────────────────────────────
+
+Please present your Registration ID (${regId}) or your conference QR code during entry at the workshop venue.
+
+If you have any questions, feel free to contact the organizing committee at 98303 67423.
+
+Warm regards,
+Organizing Committee
+45th WB PEDICON 2026
+IAP Howrah
+`;
+
+  const htmlBody = plainBody.replace(/\n/g, '<br>');
+
+  const emailOptions = {
+    to: registrant.email,
+    name: EMAIL_FROM_NAME,
+    subject: subject,
+    body: plainBody,
+    htmlBody: htmlBody
+  };
+
+  if (EMAIL_CC && EMAIL_CC.toString().trim().length > 0) {
+    emailOptions.cc = EMAIL_CC;
+  }
+
+  MailApp.sendEmail(emailOptions);
 }
 
 
@@ -576,9 +885,9 @@ function getRegistrationsSheet() {
   const sheet = ss.getSheetByName('Registrations');
   if (!sheet) return null;
 
-  // Make sure the grid is wide enough for columns T:Y
-  if (sheet.getMaxColumns() < COL_IAP_MEMBERSHIP) {
-    sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_IAP_MEMBERSHIP - sheet.getMaxColumns());
+  // Make sure the grid is wide enough for columns T:Z
+  if (sheet.getMaxColumns() < COL_WORKSHOP) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), COL_WORKSHOP - sheet.getMaxColumns());
   }
 
   const headerCell = sheet.getRange(1, COL_IDENTITY_URL, 1, PORTAL_HEADERS.length);
@@ -1051,8 +1360,9 @@ If you receive no confirmation mail, please contact support.
 
 Your Registration Details:
 ─────────────────────────────────
+Registration ID : ${regId}
 Category        : ${data.category || ''}
-Amount Paid     : ₹${data.amount || 0}
+${data.workshop ? 'Workshop        : ' + data.workshop + '\n' : ''}Amount Paid     : ₹${data.amount || 0}
 Payment ID      : ${data.paymentId || 'N/A'}
 ─────────────────────────────────
 
@@ -1135,7 +1445,8 @@ function processActionTrigger(e) {
   const sheet = ss.getSheetByName('Registrations');
   if (!sheet) return;
 
-  const rowData = sheet.getRange(row, 1, 1, 19).getValues()[0];
+  const maxCols = Math.max(sheet.getLastColumn(), COL_WORKSHOP);
+  const rowData = sheet.getRange(row, 1, 1, maxCols).getValues()[0];
   const regId = rowData[0];
   const name = rowData[2];
   const email = rowData[5];
@@ -1144,6 +1455,7 @@ function processActionTrigger(e) {
   const paymentId = rowData[12];
   const savedQrUrl = rowData[14];
   const qrFileId = rowData[18]; // Stored temporarily in column S on creation
+  const workshopName = String(rowData[COL_WORKSHOP - 1] || '');
 
   if (action === 'send') {
     try {
@@ -1152,7 +1464,8 @@ function processActionTrigger(e) {
         category: category,
         amount: amount,
         paymentId: paymentId,
-        email: email
+        email: email,
+        workshop: workshopName
       }, savedQrUrl, qrFileId);
 
       sheet.getRange(row, 19).setValue('Success ' + new Date().toISOString());
@@ -1207,7 +1520,7 @@ Your Registration Details:
 ─────────────────────────────────
 Registration ID : ${regId}
 Category        : ${data.category || ''}
-Amount Paid     : ₹${data.amount || 0}
+${data.workshop ? 'Workshop        : ' + data.workshop + '\n' : ''}Amount Paid     : ₹${data.amount || 0}
 Payment ID      : ${data.paymentId || 'N/A'}
 ─────────────────────────────────
 

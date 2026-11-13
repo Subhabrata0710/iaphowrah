@@ -55,10 +55,26 @@
   };
 
   // ============================================================
+  // WORKSHOP CONFIGURATION
+  // Easily add more workshops here as key-value items!
+  // ============================================================
+  const WORKSHOP_CONFIG = {
+    adolescent: {
+      id: 'adolescent',
+      name: 'Adolescent Workshop',
+      title: 'Adolescent Workshop (18th Dec 2026, B R Singh Hospital Auditorium)',
+      fee: 1000,
+      date: '18th December 2026',
+      venue: 'B R Singh Hospital Auditorium',
+      description: 'Adolescent Workshop | 18th December 2026 | B R Singh Hospital Auditorium | Limited to 50 seats only.'
+    }
+  };
+
+  // ============================================================
   // APPS SCRIPT API URL — Replace with deployed Web App URL
   // ============================================================
   const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbwWqQQTGkdAdSdXFjz8lEuZIeUMtdEnIJn0QTHASxE3JJF_lOssTOdE8dd7CipM9XSS/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycby_fHqSMJ7pENWboigTH0gSb-PF40siosT1EBaVy_pl5h0u2yX5aO4l-YVsDExA907Z/exec',
     RZP_KEY: 'rzp_live_TVAc2I0MUmZ44U',
     ANIMATION_THRESHOLD: 0.15,
     TOAST_DURATION: 4500,
@@ -86,6 +102,7 @@
     initCountdownIfExists();
     initGalleryIfExists();
     initFAQs();
+    initAlreadyRegisteredModal();
   }
 
   // ============================================================
@@ -399,6 +416,55 @@
   // ============================================================
   // REGISTRATION — FEE CALCULATION
   // ============================================================
+  // Current already-registered session (if user fetched an existing reg)
+  let activeExistingReg = null;
+
+  // ============================================================
+  // WORKSHOP RENDERING & SELECTION (Multi-Select Checkboxes)
+  // ============================================================
+
+  // Renders checkboxes from WORKSHOP_CONFIG into #workshop-list-container
+  function renderWorkshopCheckboxes(alreadyRegistered) {
+    const container = document.getElementById('workshop-list-container');
+    if (!container) return;
+
+    const existing = Array.isArray(alreadyRegistered)
+      ? alreadyRegistered
+      : (typeof alreadyRegistered === 'string' && alreadyRegistered)
+        ? alreadyRegistered.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+
+    const workshopKeys = Object.keys(WORKSHOP_CONFIG);
+    if (!workshopKeys.length) {
+      container.innerHTML = '<p class="text-muted" style="font-size:0.9rem;">No workshops available at this time.</p>';
+      return;
+    }
+
+    container.innerHTML = workshopKeys.map(key => {
+      const ws = WORKSHOP_CONFIG[key];
+      const isAlready = existing.some(e => e.toLowerCase() === ws.name.toLowerCase());
+      const checkId = 'ws-chk-' + key;
+      return `<label for="${checkId}" class="workshop-card${isAlready ? ' workshop-card--done' : ''}">
+        <input type="checkbox" id="${checkId}" class="workshop-checkbox" value="${key}"${isAlready ? ' disabled checked' : ''} onchange="updateRegistrationFee()">
+        <div class="workshop-card-body">
+          <div class="workshop-card-name">${ws.name}</div>
+          <div class="workshop-card-meta">${ws.date} &nbsp;|&nbsp; ${ws.venue}</div>
+          <div class="workshop-card-desc" style="font-size:0.82rem;color:#555;margin-top:3px;">${ws.description}</div>
+        </div>
+        <div class="workshop-card-fee">${isAlready ? '<span style="color:var(--color-success);font-weight:700;">✔ Registered</span>' : '&#8377;' + ws.fee.toLocaleString('en-IN')}</div>
+      </label>`;
+    }).join('');
+  }
+
+  // Returns array of WORKSHOP_CONFIG objects for all NEW checkboxes that are checked (not already registered)
+  function getSelectedWorkshops() {
+    const checked = document.querySelectorAll('.workshop-checkbox:checked:not(:disabled)');
+    return Array.from(checked).map(el => WORKSHOP_CONFIG[el.value]).filter(Boolean);
+  }
+
+  // ============================================================
+  // REGISTRATION — FEE CALCULATION
+  // ============================================================
   window.getRegistrationPeriod = function () {
     const now = new Date();
     const earlyBirdEnd = new Date(CONFERENCE_CONFIG.earlyBirdEnd + 'T23:59:59+05:30');
@@ -430,10 +496,40 @@
 
     if (!categoryEl || !feeBox) return;
 
+    const selectedWorkshops = getSelectedWorkshops(); // array of WORKSHOP_CONFIG objects
+    const totalWorkshopFee = selectedWorkshops.reduce((sum, ws) => sum + (ws.fee || 0), 0);
+    const workshopNames = selectedWorkshops.map(ws => ws.name).join(', ');
+
+    // CASE 1: ALREADY REGISTERED USER ADDING WORKSHOP(S)
+    if (activeExistingReg) {
+      if (uploadContainer) uploadContainer.style.display = 'none';
+      feeBox.style.display = 'block';
+
+      if (selectedWorkshops.length > 0) {
+        const breakdown = selectedWorkshops.map(ws =>
+          `${ws.name}: &#8377;${ws.fee.toLocaleString('en-IN')}`
+        ).join('<br>');
+        feeBox.innerHTML = `
+          <div class="fee-period">Workshop Add-On(s) for Verified Registration (${activeExistingReg.regId})</div>
+          <div class="fee-amount">&#8377;${totalWorkshopFee.toLocaleString('en-IN')}</div>
+          <div class="fee-note">${breakdown}<br><small>(Conference already registered)</small></div>`;
+        if (totalEl) totalEl.textContent = '₹' + totalWorkshopFee.toLocaleString('en-IN');
+      } else {
+        feeBox.innerHTML = `
+          <div class="fee-period">Existing Conference Registration Verified (${activeExistingReg.regId})</div>
+          <div class="fee-amount" style="color:var(--color-success)">No Workshop Selected</div>
+          <div class="fee-note">Please select a workshop above to add it to your existing registration.</div>`;
+        if (totalEl) totalEl.textContent = '₹0';
+      }
+      return;
+    }
+
+    // CASE 2: REGULAR NEW REGISTRATION
     const category = categoryEl.value;
     if (!category) {
       feeBox.style.display = 'none';
       if (uploadContainer) uploadContainer.style.display = 'none';
+      if (totalEl) totalEl.textContent = '—';
       return;
     }
 
@@ -467,12 +563,21 @@
       if (totalEl) totalEl.textContent = '—';
       return;
     }
+
+    const wsBreakdown = selectedWorkshops.length > 0
+      ? selectedWorkshops.map(ws => `+ ${ws.name}: &#8377;${ws.fee.toLocaleString('en-IN')}`).join('<br>')
+      : '';
+
     if (result.isFree) {
+      const grandTotal = totalWorkshopFee;
       feeBox.innerHTML = `
         <div class="fee-period">${periodLabels[result.period] || ''}</div>
-        <div class="fee-amount" style="color:var(--color-success)">FREE</div>
-        <div class="fee-note">Senior Citizen (>65 years) — Complimentary Registration</div>`;
-      if (totalEl) totalEl.textContent = 'FREE';
+        <div class="fee-amount" style="color:var(--color-success)">${grandTotal > 0 ? '&#8377;' + grandTotal.toLocaleString('en-IN') : 'FREE'}</div>
+        <div class="fee-note">
+          Conference: FREE (Senior Citizen &gt;65 years)
+          ${wsBreakdown ? '<br>' + wsBreakdown : ''}
+        </div>`;
+      if (totalEl) totalEl.textContent = grandTotal > 0 ? '₹' + grandTotal.toLocaleString('en-IN') : 'FREE';
     } else if (result.tba || result.amount === null) {
       feeBox.innerHTML = `
         <div class="fee-period">Registration Fee</div>
@@ -480,11 +585,17 @@
         <div class="fee-note">Fee details for this category will be updated soon. Please contact the conference secretariat.</div>`;
       if (totalEl) totalEl.textContent = '—';
     } else {
+      const confFee = result.amount;
+      const grandTotal = confFee + totalWorkshopFee;
       feeBox.innerHTML = `
         <div class="fee-period">${periodLabels[result.period] || ''}</div>
-        <div class="fee-amount">₹${result.amount.toLocaleString('en-IN')}</div>
-        <div class="fee-note">Inclusive of conference kit, certificate &amp; meals</div>`;
-      if (totalEl) totalEl.textContent = '₹' + result.amount.toLocaleString('en-IN');
+        <div class="fee-amount">&#8377;${grandTotal.toLocaleString('en-IN')}</div>
+        <div class="fee-note">
+          Conference: &#8377;${confFee.toLocaleString('en-IN')}
+          ${wsBreakdown ? '<br>' + wsBreakdown : ''}
+          <br><small style="opacity:0.85;">Inclusive of conference kit, certificate &amp; meals</small>
+        </div>`;
+      if (totalEl) totalEl.textContent = '₹' + grandTotal.toLocaleString('en-IN');
     }
   };
 
@@ -499,6 +610,9 @@
     const category = document.getElementById('reg-category')?.value;
     const inst = document.getElementById('reg-institution')?.value.trim();
     const desig = document.getElementById('reg-designation')?.value.trim();
+    const selectedWorkshops = getSelectedWorkshops(); // array
+    const totalWorkshopFee = selectedWorkshops.reduce((s, ws) => s + (ws.fee || 0), 0);
+    const workshopNames = selectedWorkshops.map(ws => ws.name).join(', ');
 
     // Validation
     if (!name || !mobile || !email || !category || !inst || !desig) {
@@ -511,6 +625,40 @@
       return showToast('Please enter a valid 10-digit Indian mobile number.', 'error');
     }
 
+    // If ALREADY REGISTERED attendee is adding workshop(s)
+    if (activeExistingReg) {
+      if (selectedWorkshops.length === 0) {
+        return showToast('Please select at least one workshop to add to your registration.', 'info');
+      }
+
+      const rzpOptions = {
+        key: CONFIG.RZP_KEY,
+        amount: totalWorkshopFee * 100,
+        currency: 'INR',
+        name: CONFERENCE_CONFIG.name,
+        description: 'Workshop(s): ' + workshopNames + ' (Reg: ' + activeExistingReg.regId + ')',
+        image: 'images/iap-howrah-logo.png',
+        handler: function (response) {
+          processWorkshopAddon(response.razorpay_payment_id, totalWorkshopFee, selectedWorkshops);
+        },
+        prefill: { name, email, contact: mobile },
+        theme: { color: '#0b2c4d' },
+        modal: {
+          ondismiss: function () {
+            showToast('Payment cancelled. You can try again.', 'info');
+          }
+        }
+      };
+
+      const rzp = new Razorpay(rzpOptions);
+      rzp.on('payment.failed', function (response) {
+        showToast('Payment Failed: ' + response.error.description, 'error');
+      });
+      rzp.open();
+      return;
+    }
+
+    // REGULAR NEW REGISTRATION FLOW
     const regDoc = document.getElementById('reg-doc');
     if (regDoc && regDoc.required && (!regDoc.files || regDoc.files.length === 0)) {
       return showToast('Please upload the required document.', 'error');
@@ -528,24 +676,25 @@
       return showToast('Registration fee for Faculty is not yet configured. Please contact the secretariat.', 'info');
     }
 
-    const amount = feeResult.amount;
+    const confAmount = feeResult.amount;
+    const totalAmount = confAmount + totalWorkshopFee;
 
-    // Free registration — skip Razorpay
-    if (feeResult.isFree || amount === 0) {
-      processRegistrationWithDoc('FREE_' + Date.now(), 0, feeResult);
+    // Free conference + no workshop fee — skip Razorpay
+    if ((feeResult.isFree || confAmount === 0) && totalWorkshopFee === 0) {
+      processRegistrationWithDoc('FREE_' + Date.now(), 0, feeResult, selectedWorkshops);
       return;
     }
 
     // Razorpay Payment
     const rzpOptions = {
       key: CONFIG.RZP_KEY,
-      amount: amount * 100,
+      amount: totalAmount * 100,
       currency: 'INR',
       name: CONFERENCE_CONFIG.name,
-      description: category + ' — Conference Registration',
+      description: category + (workshopNames ? ' + ' + workshopNames : '') + ' — Registration',
       image: 'images/iap-howrah-logo.png',
       handler: function (response) {
-        processRegistrationWithDoc(response.razorpay_payment_id, amount, feeResult);
+        processRegistrationWithDoc(response.razorpay_payment_id, totalAmount, feeResult, selectedWorkshops);
       },
       prefill: { name, email, contact: mobile },
       theme: { color: '#0b2c4d' },
@@ -614,7 +763,8 @@
     e.returnValue = '';
   }
 
-  function processRegistrationWithDoc(paymentId, amount, feeResult) {
+  // selectedWorkshops is now an ARRAY of workshop config objects
+  function processRegistrationWithDoc(paymentId, amount, feeResult, selectedWorkshops) {
     const btn = document.getElementById('reg-submit-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
     showWaitOverlay();
@@ -625,7 +775,7 @@
       const reader = new FileReader();
       reader.onload = function (e) {
         const base64Data = e.target.result.split(',')[1];
-        registerBackendWBP(paymentId, amount, feeResult, {
+        registerBackendWBP(paymentId, amount, feeResult, selectedWorkshops, {
           data: base64Data,
           mimeType: file.type,
           name: file.name
@@ -638,13 +788,18 @@
       };
       reader.readAsDataURL(file);
     } else {
-      registerBackendWBP(paymentId, amount, feeResult, null);
+      registerBackendWBP(paymentId, amount, feeResult, selectedWorkshops, null);
     }
   }
 
-  function registerBackendWBP(paymentId, amount, feeResult, docObj) {
+  // selectedWorkshops is an ARRAY of workshop config objects
+  function registerBackendWBP(paymentId, amount, feeResult, selectedWorkshops, docObj) {
     const btn = document.getElementById('reg-submit-btn');
     if (btn && btn.textContent !== 'Processing…') { btn.disabled = true; btn.textContent = 'Processing…'; }
+
+    const wsArray = Array.isArray(selectedWorkshops) ? selectedWorkshops : (selectedWorkshops ? [selectedWorkshops] : []);
+    const workshopName = wsArray.map(ws => ws.name).join(', ');
+    const workshopFee = wsArray.reduce((s, ws) => s + (ws.fee || 0), 0);
 
     const data = {
       action: 'register',
@@ -655,10 +810,12 @@
       category: document.getElementById('reg-category')?.value,
       institution: document.getElementById('reg-institution')?.value.trim(),
       designation: document.getElementById('reg-designation')?.value.trim(),
+      workshop: workshopName,
+      workshopFee: workshopFee,
       amount,
       period: feeResult.period || '',
       paymentId,
-      isFree: feeResult.isFree || false,
+      isFree: feeResult.isFree && workshopFee === 0,
       docData: docObj ? docObj.data : null,
       docMimeType: docObj ? docObj.mimeType : null,
       docName: docObj ? docObj.name : null
@@ -693,7 +850,59 @@
         });
     };
     sendRequest(0);
-  };
+  }
+
+  // Workshop-only registration for already registered users
+  // selectedWorkshops is an ARRAY of workshop config objects
+  function processWorkshopAddon(paymentId, totalWorkshopFee, selectedWorkshops) {
+    const wsArray = Array.isArray(selectedWorkshops) ? selectedWorkshops : [selectedWorkshops];
+    const workshopNames = wsArray.map(ws => ws.name).join(', ');
+
+    const btn = document.getElementById('reg-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing Workshop…'; }
+    showWaitOverlay('Adding workshop(s) to your registration and sending confirmation email…');
+
+    const data = {
+      action: 'registerWorkshop',
+      regId: activeExistingReg.regId,
+      phone: document.getElementById('reg-mobile')?.value.trim(),
+      email: document.getElementById('reg-email')?.value.trim(),
+      workshop: workshopNames,
+      workshopFee: totalWorkshopFee,
+      paymentId: paymentId
+    };
+
+    fetch(CONFIG.API_URL, { method: 'POST', body: JSON.stringify(data) })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(result => {
+        hideWaitOverlay();
+        if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
+        if (result.success) {
+          showToast('Workshop registration confirmed! Confirmation email sent.', 'success');
+          showRegistrationSuccess(result, {
+            name: activeExistingReg.name || document.getElementById('reg-name')?.value.trim(),
+            category: activeExistingReg.category || document.getElementById('reg-category')?.value,
+            email: data.email,
+            mobile: data.phone,
+            institution: activeExistingReg.institution || document.getElementById('reg-institution')?.value.trim(),
+            amount: totalWorkshopFee,
+            workshop: workshopNames,
+            isFree: false,
+            period: 'Add-On'
+          });
+        } else {
+          showToast('Error: ' + (result.message || 'Failed to add workshop.'), 'error');
+        }
+      })
+      .catch(err => {
+        hideWaitOverlay();
+        if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Payment'; }
+        showToast('Network error saving workshop. Payment ID: ' + paymentId + '. Please contact 98303 67423.', 'error');
+      });
+  }
 
   function showRegistrationSuccess(result, data) {
     const container = document.getElementById('reg-form-container');
@@ -714,7 +923,8 @@
       's-mobile': data.mobile,
       's-inst': data.institution,
       's-amount': data.isFree ? 'FREE' : '₹' + data.amount.toLocaleString('en-IN'),
-      's-period': data.period === 'earlyBird' ? 'Early Bird' : data.period === 'regular' ? 'Regular' : 'N/A',
+      's-period': data.period === 'earlyBird' ? 'Early Bird' : data.period === 'regular' ? 'Regular' : (data.period || 'N/A'),
+      's-workshop': data.workshop || 'None',
       's-date': CONFERENCE_CONFIG.dates,
       's-venue': CONFERENCE_CONFIG.venue
     };
@@ -726,7 +936,183 @@
     // Generate QR code
     generateQRCode(result.regId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ============================================================
+  // ALREADY REGISTERED MODAL & FETCH LOGIC
+  // ============================================================
+  window.fetchExistingRegistration = function () {
+    const phoneInput = document.getElementById('fetch-phone');
+    const emailInput = document.getElementById('fetch-email');
+    const regIdInput = document.getElementById('fetch-reg-id');
+    const statusMsg = document.getElementById('fetch-status-msg');
+    const submitBtn = document.getElementById('btn-submit-fetch');
+
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const regId = regIdInput ? regIdInput.value.trim() : '';
+
+    if (!phone || !email) {
+      if (statusMsg) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = 'var(--color-error)';
+        statusMsg.textContent = 'Please enter both phone number and email.';
+      }
+      return;
+    }
+
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Fetching…'; }
+    if (statusMsg) {
+      statusMsg.style.display = 'block';
+      statusMsg.style.color = 'var(--color-primary)';
+      statusMsg.textContent = 'Searching your registration…';
+    }
+
+    fetch(CONFIG.API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'fetchRegistration',
+        phone: phone,
+        email: email,
+        regId: regId
+      })
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Fetch Details'; }
+
+        if (!result.success || !result.registration) {
+          if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.color = 'var(--color-error)';
+            statusMsg.textContent = result.message || 'No matching conference registration found. Please check your phone & email.';
+          }
+          return;
+        }
+
+        // Successfully found registration!
+        const reg = result.registration;
+        activeExistingReg = reg;
+
+        // Auto-fill form fields
+        const nameEl = document.getElementById('reg-name');
+        const emailEl = document.getElementById('reg-email');
+        const mobileEl = document.getElementById('reg-mobile');
+        const catEl = document.getElementById('reg-category');
+        const desigEl = document.getElementById('reg-designation');
+        const instEl = document.getElementById('reg-institution');
+        const submitRegBtn = document.getElementById('reg-submit-btn');
+
+        if (nameEl && reg.name) nameEl.value = reg.name;
+        if (emailEl && reg.email) emailEl.value = reg.email;
+        if (mobileEl && reg.mobile) mobileEl.value = reg.mobile;
+        if (desigEl && reg.designation) desigEl.value = reg.designation;
+        if (instEl && reg.institution) instEl.value = reg.institution;
+        if (catEl && reg.category) catEl.value = reg.category;
+
+        // Parse existing workshops for this registration
+        const existingWorkshops = reg.workshop
+          ? reg.workshop.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+
+        // Re-render workshop checkboxes, disabling already-registered ones
+        renderWorkshopCheckboxes(existingWorkshops);
+
+        // Show already-registered workshops badge
+        const alreadyBadge = document.getElementById('already-registered-workshops-badge');
+        const existingWsText = document.getElementById('existing-workshops-text');
+        if (alreadyBadge && existingWsText) {
+          if (existingWorkshops.length > 0) {
+            existingWsText.textContent = existingWorkshops.join(', ');
+            alreadyBadge.style.display = 'block';
+          } else {
+            alreadyBadge.style.display = 'none';
+          }
+        }
+
+        // Show banner & adjust submit button text
+        const banner = document.getElementById('already-reg-banner');
+        const bannerId = document.getElementById('banner-reg-id');
+        if (banner && bannerId) {
+          bannerId.textContent = reg.regId;
+          banner.style.display = 'block';
+        }
+
+        if (submitRegBtn) {
+          submitRegBtn.textContent = 'Pay & Add Workshop';
+        }
+
+        // Close modal
+        closeAlreadyRegModal();
+        showToast('Registration ' + reg.regId + ' found! Select your workshop(s) below.', 'success');
+
+        // Update fee view
+        updateRegistrationFee();
+      })
+      .catch(err => {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Fetch Details'; }
+        if (statusMsg) {
+          statusMsg.style.display = 'block';
+          statusMsg.style.color = 'var(--color-error)';
+          statusMsg.textContent = 'Network error fetching registration. Please try again.';
+        }
+      });
   };
+
+  function openAlreadyRegModal() {
+    const modal = document.getElementById('already-reg-modal');
+    const statusMsg = document.getElementById('fetch-status-msg');
+    if (statusMsg) statusMsg.style.display = 'none';
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeAlreadyRegModal() {
+    const modal = document.getElementById('already-reg-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function clearAlreadyRegisteredState() {
+    activeExistingReg = null;
+    const banner = document.getElementById('already-reg-banner');
+    if (banner) banner.style.display = 'none';
+
+    const alreadyBadge = document.getElementById('already-registered-workshops-badge');
+    if (alreadyBadge) alreadyBadge.style.display = 'none';
+
+    const submitRegBtn = document.getElementById('reg-submit-btn');
+    if (submitRegBtn) submitRegBtn.textContent = 'Proceed to Payment';
+
+    const form = document.getElementById('reg-form');
+    if (form) form.reset();
+
+    // Re-render workshop checkboxes without any disabled state
+    renderWorkshopCheckboxes([]);
+
+    showToast('Switched to new registration mode.', 'info');
+    updateRegistrationFee();
+  }
+
+  function initAlreadyRegisteredModal() {
+    const openBtn = document.getElementById('btn-open-already-registered');
+    const closeBtn = document.getElementById('already-reg-modal-close');
+    const cancelBtn = document.getElementById('already-reg-modal-cancel');
+    const clearBtn = document.getElementById('btn-clear-already-registered');
+    const modal = document.getElementById('already-reg-modal');
+
+    if (openBtn) openBtn.addEventListener('click', openAlreadyRegModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeAlreadyRegModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeAlreadyRegModal);
+    if (clearBtn) clearBtn.addEventListener('click', clearAlreadyRegisteredState);
+
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeAlreadyRegModal();
+      });
+    }
+
+    // Initial render of workshop checkboxes (no already-registered ones)
+    renderWorkshopCheckboxes([]);
+  }
 
   // ============================================================
   // QR CODE GENERATION
