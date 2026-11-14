@@ -62,12 +62,21 @@
     adolescent: {
       id: 'adolescent',
       name: 'Adolescent Workshop',
-      title: 'Adolescent Workshop (18th Dec 2026, B R Singh Hospital Auditorium)',
+      title: 'Adolescent Workshop (18th Dec 2026, B R Hospital Auditorium)',
       fee: 1000,
       date: '18th December 2026',
       venue: 'B R Singh Hospital Auditorium',
       description: ''
-    }
+    };
+     neuro: {
+      id: 'neuro-w',
+      name: 'Neuro Workshop',
+      title: 'Neuro Workshop (18th Dec 2026, Neotia Bhagirathi women and child care cente, New Town)',
+      fee: 1000,
+      date: '18th December 2026',
+      venue: ' Neotia Bhagirathi women and child care cente, New Town',
+      description: ''
+     }
   };
 
   // ============================================================
