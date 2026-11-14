@@ -66,7 +66,7 @@
       fee: 1000,
       date: '18th December 2026',
       venue: 'B R Singh Hospital Auditorium',
-      description: 'Adolescent Workshop | 18th December 2026 | B R Singh Hospital Auditorium | Limited to 50 seats only.'
+      description: ''
     }
   };
 
