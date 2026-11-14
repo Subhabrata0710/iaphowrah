@@ -67,7 +67,7 @@
       date: '18th December 2026',
       venue: 'B R Singh Hospital Auditorium',
       description: ''
-    };
+    },
      neuro: {
       id: 'neuro-w',
       name: 'Neuro Workshop',
