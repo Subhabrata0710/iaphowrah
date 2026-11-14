@@ -68,10 +68,10 @@
       venue: 'B R Singh Hospital Auditorium',
       description: ''
     },
-     neuro: {
-      id: 'neuro-w',
-      name: 'Neuro Workshop',
-      title: 'Neuro Workshop (18th Dec 2026, Neotia Bhagirathi women and child care cente, New Town)',
+     nephro: {
+      id: 'nephro-w',
+      name: 'Nephrology Workshop',
+      title: 'Nephrology Workshop (18th Dec 2026, Neotia Bhagirathi women and child care cente, New Town)',
       fee: 1000,
       date: '18th December 2026',
       venue: ' Neotia Bhagirathi women and child care cente, New Town',
