@@ -1267,3 +1267,64 @@ if (document.readyState === 'loading') {
 } else {
   if (typeof initProgramTabs === 'function') initProgramTabs();
 }
+
+/* ============================================================
+   ABSTRACT SUBMISSION CLOSING (dashboard)
+   Abstract submissions closed on 15 Nov 2026 (end of day IST).
+   Disables the abstract form and shows a small note. Re-applies
+   itself whenever the dashboard re-renders the form.
+   ============================================================ */
+(function () {
+  var ABSTRACT_DEADLINE = new Date('2026-11-15T23:59:59+05:30');
+
+  function abstractsClosed() {
+    return new Date() > ABSTRACT_DEADLINE;
+  }
+
+  function applyAbstractClosed() {
+    var card = document.getElementById('abstract-card');
+    var fieldset = document.getElementById('abstract-fieldset');
+    if (!card || !fieldset) return;
+
+    if (!fieldset.disabled) fieldset.disabled = true;
+
+    var badge = document.getElementById('abstract-badge');
+    if (badge && badge.textContent !== 'Submitted' && badge.textContent !== 'Closed') {
+      badge.textContent = 'Closed';
+    }
+
+    if (!document.getElementById('abstract-closed-note')) {
+      var note = document.createElement('p');
+      note.id = 'abstract-closed-note';
+      note.textContent = 'Abstract submissions closed on 15 November 2026.';
+      note.style.cssText = 'font-size:0.85rem;color:var(--color-text-muted);margin:0.5rem 0 0;';
+      var status = document.getElementById('abstract-status');
+      (status ? status.parentNode : card).insertBefore(note, status || null);
+    }
+  }
+
+  function init() {
+    if (!abstractsClosed()) return;
+    applyAbstractClosed();
+
+    // Dashboard re-renders the form after login/upload; keep it closed.
+    var fieldset = document.getElementById('abstract-fieldset');
+    if (fieldset && window.MutationObserver) {
+      new MutationObserver(function () {
+        if (!fieldset.disabled) applyAbstractClosed();
+      }).observe(fieldset, { attributes: true, attributeFilter: ['disabled'] });
+    }
+    var card = document.getElementById('abstract-card');
+    if (card && window.MutationObserver) {
+      new MutationObserver(function () {
+        applyAbstractClosed();
+      }).observe(card, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
