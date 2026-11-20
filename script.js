@@ -68,7 +68,7 @@
       venue: 'B R Singh Hospital Auditorium',
       description: ''
     },
-     nephro: {
+    nephro: {
       id: 'nephro-w',
       name: 'Nephrology Workshop',
       title: 'Nephrology Workshop (18th Dec 2026, Neotia Bhagirathi women and child care cente, New Town)',
@@ -76,7 +76,16 @@
       date: '18th December 2026',
       venue: ' Neotia Bhagirathi women and child care cente, New Town',
       description: ''
-     }
+    },
+    nephro: {
+      id: 'cardio',
+      name: 'PEDIATRIC CARDIOLOGY',
+      title: 'PEDIATRIC CARDIOLOGY (18th Dec 2026, IPGME&R & SSKM Hospital,Kolkata)',
+      fee: 1000,
+      date: '18th December 2026',
+      venue: 'IPGME&R & SSKM Hospital,Kolkata',
+      description: ''
+    }
   };
 
   // ============================================================
