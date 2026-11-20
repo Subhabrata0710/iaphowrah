@@ -77,7 +77,7 @@
       venue: ' Neotia Bhagirathi women and child care cente, New Town',
       description: ''
     },
-    nephro: {
+    cardio: {
       id: 'cardio',
       name: 'PEDIATRIC CARDIOLOGY',
       title: 'PEDIATRIC CARDIOLOGY (18th Dec 2026, IPGME&R & SSKM Hospital,Kolkata)',
