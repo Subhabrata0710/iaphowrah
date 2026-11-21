@@ -25,7 +25,7 @@
     confPartnerPhone: '9830367423',
     idPrefix: 'WBP26',
     earlyBirdEnd: '2026-10-20', // inclusive
-    secondPeriodEnd: '2026-11-15', // inclusive
+    secondPeriodEnd: '2026-12-10', // inclusive
   };
 
   // ============================================================
@@ -490,7 +490,7 @@
 
     if (now <= earlyBirdEnd) return 'earlyBird';
     if (now <= secondEnd) return 'regular';
-    return 'tba'; // after 31 Oct — show TBA
+    return 'tba'; // after secondPeriodEnd — show Period Ended
   };
 
   window.getFeeForCategory = function (category) {
@@ -572,7 +572,7 @@
 
     const periodLabels = {
       earlyBird: 'Early Bird — Up to 20 October 2026',
-      regular: 'Regular — 21 October to 15 November 2026',
+      regular: 'Regular — 21 October to 10 December 2026',
       tba: '📢 Period Ended'
     };
 
