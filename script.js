@@ -450,6 +450,8 @@
   // WORKSHOP RENDERING & SELECTION (Multi-Select Checkboxes)
   // ============================================================
 
+  // [PREVIOUS: multi-select checkboxes — kept for reference, disabled]
+/*
   // Renders checkboxes from WORKSHOP_CONFIG into #workshop-list-container
   function renderWorkshopCheckboxes(alreadyRegistered) {
     const container = document.getElementById('workshop-list-container');
@@ -473,6 +475,45 @@
       const checkId = 'ws-chk-' + key;
       return `<label for="${checkId}" class="workshop-card${isAlready ? ' workshop-card--done' : ''}">
         <input type="checkbox" id="${checkId}" class="workshop-checkbox" value="${key}"${isAlready ? ' disabled checked' : ''} onchange="updateRegistrationFee()">
+        <div class="workshop-card-body">
+          <div class="workshop-card-name">${ws.name}</div>
+          <div class="workshop-card-meta">${ws.date} &nbsp;|&nbsp; ${ws.venue}</div>
+          <div class="workshop-card-desc" style="font-size:0.82rem;color:#555;margin-top:3px;">${ws.description}</div>
+        </div>
+        <div class="workshop-card-fee">${isAlready ? '<span style="color:var(--color-success);font-weight:700;">✔ Registered</span>' : '&#8377;' + ws.fee.toLocaleString('en-IN')}</div>
+      </label>`;
+    }).join('');
+  }
+
+*/
+
+  // Renders ONE-ONLY radio buttons from WORKSHOP_CONFIG into #workshop-list-container
+  // (Max 1 workshop per registration). Already-registered workshops stay disabled + checked.
+  function renderWorkshopCheckboxes(alreadyRegistered) {
+    const container = document.getElementById('workshop-list-container');
+    if (!container) return;
+
+    const existing = Array.isArray(alreadyRegistered)
+      ? alreadyRegistered
+      : (typeof alreadyRegistered === 'string' && alreadyRegistered)
+        ? alreadyRegistered.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+
+    const workshopKeys = Object.keys(WORKSHOP_CONFIG);
+    if (!workshopKeys.length) {
+      container.innerHTML = '<p class="text-muted" style="font-size:0.9rem;">No workshops available at this time.</p>';
+      return;
+    }
+
+    container.innerHTML = workshopKeys.map(key => {
+      const ws = WORKSHOP_CONFIG[key];
+      const isAlready = existing.some(e => e.toLowerCase() === ws.name.toLowerCase());
+      const checkId = 'ws-chk-' + key;
+      // Radios share name="workshop-select" so only one can be chosen.
+      // Already-registered items get no name, so they stay outside the group.
+      const nameAttr = isAlready ? '' : ' name="workshop-select"';
+      return `<label for="${checkId}" class="workshop-card${isAlready ? ' workshop-card--done' : ''}">
+        <input type="radio" id="${checkId}" class="workshop-checkbox"${nameAttr} value="${key}"${isAlready ? ' disabled checked' : ''} onchange="updateRegistrationFee()">
         <div class="workshop-card-body">
           <div class="workshop-card-name">${ws.name}</div>
           <div class="workshop-card-meta">${ws.date} &nbsp;|&nbsp; ${ws.venue}</div>
