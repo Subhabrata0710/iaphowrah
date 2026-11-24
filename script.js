@@ -85,6 +85,15 @@
       date: '18th December 2026',
       venue: 'IPGME&R & SSKM Hospital,Kolkata',
       description: ''
+    },
+    radio: {
+      id: 'radio',
+      name: 'PEDIATRIC RADIOLOGY WORKSHOP',
+      title: 'PEDIATRIC RADIOLOGY WORKSHOP (RIVERA BANQUET, Opposite Howrah Railway Museum)',
+      fee: 1000,
+      date: '18th December 2026',
+      venue: 'RIVERA BANQUET, Opposite Howrah Railway Museum',
+      description: ''
     }
   };
 
